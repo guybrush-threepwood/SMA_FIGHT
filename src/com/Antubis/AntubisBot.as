@@ -33,16 +33,14 @@
 	public class AntubisBot extends Bot {
 		
 		protected var not_moving:Boolean;
-		protected var old_position:Point;
 		protected var seenBot:AntubisBot;
 		
 		public override function AntubisBot(_type:AgentType) {
 			super(_type);
-			old_position = new Point(0, 0);
 		}
 		
 		public override function Update() : void
-		{	
+		{
 			UpdateFacts();
 			Infer();
 			Act();
@@ -50,7 +48,7 @@
 			Chat();
 			Move();
 			not_moving = false;
-			if (botSprite && (botSprite.x == 0 || botSprite.y  == 0)) {
+			if ((botSprite && (botSprite.x == 0 || botSprite.y == 0)) || (direction.x == 0 || direction.y  == 0)) {
 				not_moving = true;
 			}
 			reachedResource = null;
@@ -62,6 +60,10 @@
 			
 			expertSystem.AddRule(new Rule(AgentFacts.GO_TO_RESOURCE, 	new Array(	AgentFacts.NO_RESOURCE,
 																					AgentFacts.SEE_RESOURCE)));
+			
+			expertSystem.AddRule(new Rule(AgentFacts.GO_TO_RESOURCE, 	new Array(	AgentFacts.NO_RESOURCE,
+																					AgentFacts.SEE_RESOURCE,
+																					AgentFacts.BIGGER_RESOURCE)));
 			
 			expertSystem.AddRule(new Rule(AgentFacts.GO_TO_RESOURCE, 	new Array(	AgentFacts.NO_RESOURCE,
 																					AgentFacts.NOTHING_SEEN,
@@ -76,9 +78,8 @@
 			expertSystem.AddRule(new Rule(AgentFacts.PUT_DOWN_RESOURCE,	new Array(	AgentFacts.AT_HOME,
 																					AgentFacts.GOT_RESOURCE)));
 			
-			expertSystem.AddRule(new Rule(AgentFacts.CHANGE_DIRECTION, new Array( 	CustomBotFacts.NOT_MOVING,
+			expertSystem.AddRule(new Rule(AgentFacts.CHANGE_DIRECTION, new Array(	CustomBotFacts.NOT_MOVING,
 																					AgentFacts.CHANGE_DIRECTION_TIME)));
-			
 		}
 		
 		protected override function UpdateFacts() : void {
@@ -101,6 +102,11 @@
 			
 			if(seenResource) {
 				expertSystem.SetFactValue(AgentFacts.SEE_RESOURCE, true);
+				if (takenResource != null && seenResource.GetLife() > takenResource.GetLife()) {
+					expertSystem.SetFactValue(AgentFacts.BIGGER_RESOURCE, true);
+				} else {
+					expertSystem.SetFactValue(AgentFacts.SMALLER_RESOURCE, true);
+				}
 			} else {
 				expertSystem.SetFactValue(AgentFacts.NOTHING_SEEN, true);
 			}
@@ -135,7 +141,9 @@
 			var collidedAgent:Agent = _event.GetAgent();
 			super.onAgentCollide(_event);
 			if (collidedAgent.GetType() == CustomAgentType.ANTUBIS_BOT) {
-						seenBot = (collidedAgent  as AntubisBot);
+				if ((collidedAgent  as Bot).GetTeamId() == teamId) {
+					seenBot = (collidedAgent as AntubisBot);
+				}
 			}
 		}
 		
