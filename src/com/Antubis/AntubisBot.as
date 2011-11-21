@@ -35,13 +35,19 @@
 		protected var not_moving:Boolean;
 		protected var seenBot:AntubisBot;
 		protected var stealable_bot:Bot;
+		protected var old_pos:Point;
 		
 		public override function AntubisBot(_type:AgentType) {
+			old_pos = new Point(-1, -1);
 			super(_type);
 		}
 		
 		public override function Update() : void
 		{
+			if(botSprite) {
+				old_pos.x = botSprite.x;
+				old_pos.y = botSprite.y;
+			}
 			UpdateFacts();
 			Infer();
 			Act();
@@ -49,7 +55,7 @@
 			Chat();
 			Move();
 			not_moving = false;
-			if ((botSprite && (botSprite.x == 0 || botSprite.y == 0)) || (direction.x == 0 || direction.y  == 0)) {
+			if (botSprite && botSprite.x == old_pos.x && botSprite.y == old_pos.y) {
 				not_moving = true;
 			}
 			reachedResource = null;
@@ -61,11 +67,6 @@
 			
 			expertSystem.AddRule(new Rule(CustomBotFacts.STEAL_BOT,		new Array(	AgentFacts.NO_RESOURCE,
 																					CustomBotFacts.STEALABLE_BOT)));
-			
-			expertSystem.AddRule(new Rule(AgentFacts.CHANGE_DIRECTION, 	new Array( 	AgentFacts.NO_RESOURCE,
-																					AgentFacts.NOTHING_SEEN,
-																					CustomBotFacts.NO_RESOURCE_FOUND,
-																					AgentFacts.CHANGE_DIRECTION_TIME)));
 			
 			expertSystem.AddRule(new Rule(AgentFacts.GO_TO_RESOURCE, 	new Array(	AgentFacts.NO_RESOURCE,
 																					AgentFacts.SEE_RESOURCE)));
