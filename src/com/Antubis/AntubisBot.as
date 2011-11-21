@@ -42,27 +42,17 @@
 		}
 		
 		public override function Update() : void
-		{
+		{	
 			UpdateFacts();
 			Infer();
 			Act();
-			
 			DrawSprite();
-			
-			if (botSprite) {
-				old_position.x = botSprite.x;
-				old_position.y = botSprite.y;
-			}
-			
 			Chat();
-			
 			Move();
-			
 			not_moving = false;
-			if (old_position.x == botSprite.x && old_position.y == botSprite.y) {
+			if (botSprite && (botSprite.x == 0 || botSprite.y  == 0)) {
 				not_moving = true;
 			}
-
 			reachedResource = null;
 			home = null;
 		}
@@ -85,15 +75,6 @@
 			
 			expertSystem.AddRule(new Rule(AgentFacts.PUT_DOWN_RESOURCE,	new Array(	AgentFacts.AT_HOME,
 																					AgentFacts.GOT_RESOURCE)));
-
-			expertSystem.AddRule(new Rule(AgentFacts.CHANGE_DIRECTION, 	new Array(	AgentFacts.NO_RESOURCE,
-																					AgentFacts.NOTHING_SEEN,
-																					CustomBotFacts.NO_RESOURCE_FOUND,
-																					AgentFacts.CHANGE_DIRECTION_TIME)));
-			
-			expertSystem.AddRule(new Rule(AgentFacts.CHANGE_DIRECTION, new Array(	AgentFacts.GOT_RESOURCE,
-																					AgentFacts.NOT_SEEING_HOME,
-																					AgentFacts.CHANGE_DIRECTION_TIME)));
 			
 			expertSystem.AddRule(new Rule(AgentFacts.CHANGE_DIRECTION, new Array( 	CustomBotFacts.NOT_MOVING,
 																					AgentFacts.CHANGE_DIRECTION_TIME)));
@@ -107,9 +88,8 @@
 				updateTime = 0;
 			}
 			
-			if (updateTime > directionChangeDelay && not_moving) {
+			if (not_moving) {
 				expertSystem.SetFactValue(CustomBotFacts.NOT_MOVING, true);
-				updateTime = 0;
 			}
 		
 			if (hasResource) {
