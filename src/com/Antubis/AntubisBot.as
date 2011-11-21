@@ -34,6 +34,7 @@
 		
 		protected var not_moving:Boolean;
 		protected var seenBot:AntubisBot;
+		protected var stealable_bot:Bot;
 		
 		public override function AntubisBot(_type:AgentType) {
 			super(_type);
@@ -57,6 +58,14 @@
 		
 		protected override function InitExpertSystem() : void {
 			expertSystem = new ExpertSystem();
+			
+			expertSystem.AddRule(new Rule(CustomBotFacts.STEAL_BOT,		new Array(	AgentFacts.NO_RESOURCE,
+																					CustomBotFacts.STEALABLE_BOT)));
+			
+			expertSystem.AddRule(new Rule(AgentFacts.CHANGE_DIRECTION, 	new Array( 	AgentFacts.NO_RESOURCE,
+																					AgentFacts.NOTHING_SEEN,
+																					CustomBotFacts.NO_RESOURCE_FOUND,
+																					AgentFacts.CHANGE_DIRECTION_TIME)));
 			
 			expertSystem.AddRule(new Rule(AgentFacts.GO_TO_RESOURCE, 	new Array(	AgentFacts.NO_RESOURCE,
 																					AgentFacts.SEE_RESOURCE)));
@@ -87,6 +96,12 @@
 			if (updateTime > directionChangeDelay) {
 				expertSystem.SetFactValue(AgentFacts.CHANGE_DIRECTION_TIME, true);
 				updateTime = 0;
+			}
+			
+			if (stealable_bot) {
+				expertSystem.SetFactValue(CustomBotFacts.STEALABLE_BOT, true);
+			} else {
+				expertSystem.SetFactValue(CustomBotFacts.NO_STEALABLE_BOT, true);
 			}
 			
 			if (not_moving) {
@@ -136,6 +151,14 @@
 			}
 		}
 		
+		protected override function Act():void {
+			var fact:Fact = new Fact("");
+			super.Act();
+			if (fact == CustomBotFacts.STEAL_BOT) {
+				StealResource(stealable_bot);
+			}
+		}
+		
 		public override function onAgentCollide(_event:AgentCollideEvent) : void
 		{
 			var collidedAgent:Agent = _event.GetAgent();
@@ -143,6 +166,12 @@
 			if (collidedAgent.GetType() == CustomAgentType.ANTUBIS_BOT) {
 				if ((collidedAgent  as Bot).GetTeamId() == teamId) {
 					seenBot = (collidedAgent as AntubisBot);
+				}
+			} else if (IsCollided(collidedAgent)) {
+				if (collidedAgent.GetType() != AgentType.AGENT_BOT_HOME && collidedAgent.GetType() != AgentType.AGENT_RESOURCE) {
+					if ((collidedAgent as Bot).HasResource()) {
+						stealable_bot = (collidedAgent as Bot);
+					}
 				}
 			}
 		}
