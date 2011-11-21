@@ -193,10 +193,10 @@
 				if (homePosition == null) {
 					homePosition = seenBot.GetHomePosition();
 				}
-				if (seenResource == null) {
+				if (seenResource == null || seenBot.GetSeenResource() != null && seenResource.GetLife() < seenBot.GetSeenResource().GetLife()) {
 					seenResource = seenBot.GetSeenResource();
 				}
-				if (takenResource == null) {
+				if (takenResource == null || seenBot.GetTakenResource() != null && takenResource.GetLife() < seenBot.GetTakenResource().GetLife()) {
 					takenResource = seenBot.GetTakenResource();
 				}
 			}
