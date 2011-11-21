@@ -18,7 +18,11 @@
 	{		
 		//public static const CUSTOM_FACT:Fact = new Fact("");
 		
-		public static const RESSOURCE_FIND:Fact = new Fact("");
+		public static const RESOURCE_FOUND:Fact 	= new Fact("Found a resource");
+		
+		public static const NO_RESOURCE_FOUND:Fact 	= new Fact("Found no resource");
+		
+		public static const NOT_MOVING:Fact 		= new Fact("not moving");
 	}
 
 }
