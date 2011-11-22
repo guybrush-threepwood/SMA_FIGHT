@@ -36,27 +36,8 @@
 		protected var old_pos:Point;
 		
 		public override function AntubisBot(_type:AgentType) {
-			old_pos = new Point(-1, -1);
+			old_pos = new Point( -1, -1);
 			super(_type);
-		}
-		
-		public override function Update() : void
-		{
-			if(botSprite) {
-				old_pos.x = botSprite.x;
-				old_pos.y = botSprite.y;
-			}
-			UpdateFacts();
-			Infer();
-			Act();
-			DrawSprite();
-			Move();
-			not_moving = false;
-			if (botSprite && botSprite.x == old_pos.x && botSprite.y == old_pos.y) {
-				not_moving = true;
-			}
-			reachedResource = null;
-			home = null;
 		}
 		
 		protected override function InitExpertSystem() : void {
@@ -82,19 +63,18 @@
 			expertSystem.AddRule(new Rule(AgentFacts.PUT_DOWN_RESOURCE,	new Array(	AgentFacts.AT_HOME,
 																					AgentFacts.GOT_RESOURCE)));
 			
-			expertSystem.AddRule(new Rule(AgentFacts.CHANGE_DIRECTION, new Array(	CustomBotFacts.NOT_MOVING,
-																					AgentFacts.CHANGE_DIRECTION_TIME)));
+			expertSystem.AddRule(new Rule(AgentFacts.CHANGE_DIRECTION, new Array(	AgentFacts.CHANGE_DIRECTION_TIME, 
+																					AgentFacts.NOTHING_SEEN,
+																					AgentFacts.NO_RESOURCE,
+																					CustomBotFacts.NO_RESOURCE_FOUND)));
 		}
 		
 		protected override function UpdateFacts() : void {
 			updateTime += TimeManager.timeManager.GetFrameDeltaTime();
-			if (updateTime > directionChangeDelay) {
+			if (updateTime > directionChangeDelay)
+			{
 				expertSystem.SetFactValue(AgentFacts.CHANGE_DIRECTION_TIME, true);
 				updateTime = 0;
-			}
-			
-			if (not_moving) {
-				expertSystem.SetFactValue(CustomBotFacts.NOT_MOVING, true);
 			}
 		
 			if (hasResource) {
@@ -170,9 +150,6 @@
 			} else if (takenResource != null) {
 				direction = takenResource.GetTargetPoint().subtract(targetPoint);
 				direction.normalize(1);
-				if (takenResource.IsDead()) {
-					takenResource = null;
-				}
 			}
 		}
 		

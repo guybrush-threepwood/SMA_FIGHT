@@ -21,8 +21,6 @@
 		public static const RESOURCE_FOUND:Fact 	= new Fact("Found a resource");
 		
 		public static const NO_RESOURCE_FOUND:Fact 	= new Fact("Found no resource");
-		
-		public static const NOT_MOVING:Fact 		= new Fact("Not moving");
 	}
 
 }
