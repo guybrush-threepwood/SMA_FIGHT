@@ -33,8 +33,6 @@
 	public class AntubisBot extends Bot {
 		
 		protected var not_moving:Boolean;
-		protected var seenBot:AntubisBot;
-		protected var stealable_bot:Bot;
 		protected var old_pos:Point;
 		
 		public override function AntubisBot(_type:AgentType) {
@@ -52,7 +50,6 @@
 			Infer();
 			Act();
 			DrawSprite();
-			Chat();
 			Move();
 			not_moving = false;
 			if (botSprite && botSprite.x == old_pos.x && botSprite.y == old_pos.y) {
@@ -64,9 +61,6 @@
 		
 		protected override function InitExpertSystem() : void {
 			expertSystem = new ExpertSystem();
-			
-			expertSystem.AddRule(new Rule(CustomBotFacts.STEAL_BOT,		new Array(	AgentFacts.NO_RESOURCE,
-																					CustomBotFacts.STEALABLE_BOT)));
 			
 			expertSystem.AddRule(new Rule(AgentFacts.GO_TO_RESOURCE, 	new Array(	AgentFacts.NO_RESOURCE,
 																					AgentFacts.SEE_RESOURCE)));
@@ -97,12 +91,6 @@
 			if (updateTime > directionChangeDelay) {
 				expertSystem.SetFactValue(AgentFacts.CHANGE_DIRECTION_TIME, true);
 				updateTime = 0;
-			}
-			
-			if (stealable_bot) {
-				expertSystem.SetFactValue(CustomBotFacts.STEALABLE_BOT, true);
-			} else {
-				expertSystem.SetFactValue(CustomBotFacts.NO_STEALABLE_BOT, true);
 			}
 			
 			if (not_moving) {
@@ -152,26 +140,18 @@
 			}
 		}
 		
-		protected override function Act():void {
-			var fact:Fact = new Fact("");
-			super.Act();
-			if (fact == CustomBotFacts.STEAL_BOT) {
-				StealResource(stealable_bot);
-			}
-		}
-		
 		public override function onAgentCollide(_event:AgentCollideEvent) : void
 		{
 			var collidedAgent:Agent = _event.GetAgent();
 			super.onAgentCollide(_event);
 			if (collidedAgent.GetType() == CustomAgentType.ANTUBIS_BOT) {
 				if ((collidedAgent  as Bot).GetTeamId() == teamId) {
-					seenBot = (collidedAgent as AntubisBot);
+					Chat(collidedAgent as AntubisBot);
 				}
 			} else if (IsCollided(collidedAgent)) {
 				if (collidedAgent.GetType() != AgentType.AGENT_BOT_HOME && collidedAgent.GetType() != AgentType.AGENT_RESOURCE) {
-					if ((collidedAgent as Bot).HasResource()) {
-						stealable_bot = (collidedAgent as Bot);
+					if ((collidedAgent as Bot).HasResource() && !hasResource) {
+						StealResource(collidedAgent as Bot);
 					}
 				}
 			}
@@ -189,17 +169,15 @@
 			}
 		}
 		
-		protected function Chat():void {
-			if(seenBot != null) {
-				if (homePosition == null) {
-					homePosition = seenBot.GetHomePosition();
-				}
-				if (seenResource == null || seenBot.GetSeenResource() != null && seenResource.GetLife() < seenBot.GetSeenResource().GetLife()) {
-					seenResource = seenBot.GetSeenResource();
-				}
-				if (takenResource == null || seenBot.GetTakenResource() != null && takenResource.GetLife() < seenBot.GetTakenResource().GetLife()) {
-					takenResource = seenBot.GetTakenResource();
-				}
+		protected function Chat(seenBot:AntubisBot):void {
+			if (homePosition == null) {
+				homePosition = seenBot.GetHomePosition();
+			}
+			if (seenResource == null || seenBot.GetSeenResource() != null && seenResource.GetLife() < seenBot.GetSeenResource().GetLife()) {
+				seenResource = seenBot.GetSeenResource();
+			}
+			if (takenResource == null || seenBot.GetTakenResource() != null && takenResource.GetLife() < seenBot.GetTakenResource().GetLife()) {
+				takenResource = seenBot.GetTakenResource();
 			}
 		}
 		
