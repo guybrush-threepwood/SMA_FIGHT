@@ -34,9 +34,17 @@
 	public class AntubisBot extends Bot {
 		
 		private static const LIMIT:Number = 10;
+		private var seenBots:Array;
+		private var too_much_team_bots:Boolean = false;
 		
 		public override function AntubisBot(_type:AgentType) {
+			seenBots = new Array();
 			super(_type);
+		}
+		
+		public override function Update():void {
+			super.Update();
+			too_much_team_bots = false;
 		}
 		
 		protected override function InitExpertSystem() : void {
@@ -64,6 +72,9 @@
 			
 			expertSystem.AddRule(new Rule(AgentFacts.CHANGE_DIRECTION, new Array(	CustomBotFacts.NEAR_EDGES,
 																					AgentFacts.CHANGE_DIRECTION_TIME)));
+			
+			expertSystem.AddRule(new Rule(AgentFacts.CHANGE_DIRECTION, new Array(	AgentFacts.CHANGE_DIRECTION_TIME,
+																					CustomBotFacts.TOO_MUCH_PEOPLE)));
 		}
 		
 		protected override function UpdateFacts() : void {
@@ -77,7 +88,11 @@
 			if ( x <= LIMIT || x >= World.WORLD_WIDTH - LIMIT || y <= LIMIT || y >= World.WORLD_HEIGHT - LIMIT) {
 				expertSystem.SetFactValue(CustomBotFacts.NEAR_EDGES, true);
 			}
-		
+			
+			if (too_much_team_bots) {
+				expertSystem.SetFactValue(CustomBotFacts.TOO_MUCH_PEOPLE, true);
+			}
+			
 			if (hasResource) {
 				expertSystem.SetFactValue(AgentFacts.GOT_RESOURCE, true);
 			}
@@ -128,6 +143,9 @@
 			if (IsPercieved(collidedAgent)) {
 				if (collidedAgent.GetType() == CustomAgentType.ANTUBIS_BOT) {
 					if ((collidedAgent  as Bot).GetTeamId() == teamId) {
+						if(seenBots.indexOf(collidedAgent as AntubisBot) == -1) {
+							seenBots.push(collidedAgent as AntubisBot);
+						}
 						Chat(collidedAgent as AntubisBot);
 					}
 				}
@@ -142,6 +160,36 @@
 			}
 		}
 		
+		public function Chat(seenBot:AntubisBot):void {
+			var i:Number = 0;
+			var PerceivableOtherTeamBotsOnIt:Number = 0;
+			for (i = 0; i < seenBots.length; i++) {
+				if (IsPercieved(seenBots[i])) {
+					if (homePosition == null) {
+						homePosition = seenBots[i].GetHomePosition();
+					}
+					if (seenResource == seenBots[i].GetSeenResource() && !seenBots[i].HasResource()) {
+						PerceivableOtherTeamBotsOnIt ++;
+					}
+				}
+			}
+			
+			if (seenResource != null && PerceivableOtherTeamBotsOnIt >= seenResource.GetLife() / World.RESOURCE_UPDATE_VALUE) {
+					seenResource = null;
+					too_much_team_bots = true;
+			}
+			if(seenBot.GetSeenResource() != null) {
+				if(!too_much_team_bots) {
+					if (seenResource == null || seenBot.GetSeenResource() != null && seenResource.GetLife() < seenBot.GetSeenResource().GetLife()) {
+						seenResource = seenBot.GetSeenResource();
+					}
+					if (takenResource == null || seenBot.GetTakenResource() != null && takenResource.GetLife() < seenBot.GetTakenResource().GetLife()) {
+						takenResource = seenBot.GetTakenResource();
+					}
+				}
+			}
+		}
+		
 		public override function GoToResource():void {
 			
 			if (seenResource != null) {
@@ -151,18 +199,6 @@
 			} else if (takenResource != null) {
 				direction = takenResource.GetTargetPoint().subtract(targetPoint);
 				direction.normalize(1);
-			}
-		}
-		
-		protected function Chat(seenBot:AntubisBot):void {
-			if (homePosition == null) {
-				homePosition = seenBot.GetHomePosition();
-			}
-			if (seenResource == null || seenBot.GetSeenResource() != null && seenResource.GetLife() < seenBot.GetSeenResource().GetLife()) {
-				seenResource = seenBot.GetSeenResource();
-			}
-			if (takenResource == null || seenBot.GetTakenResource() != null && takenResource.GetLife() < seenBot.GetTakenResource().GetLife()) {
-				takenResource = seenBot.GetTakenResource();
 			}
 		}
 		

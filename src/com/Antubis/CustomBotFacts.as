@@ -23,6 +23,8 @@
 		public static const NO_RESOURCE_FOUND:Fact 	= new Fact("Found no resource");
 		
 		public static const NEAR_EDGES:Fact			= new Fact("Near one of the world's edges");
+		
+		public static const TOO_MUCH_PEOPLE:Fact	= new Fact("Too much people of my team on this resource.");
 	}
 
 }
