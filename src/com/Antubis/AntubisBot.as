@@ -70,8 +70,7 @@
 		
 		protected override function UpdateFacts() : void {
 			updateTime += TimeManager.timeManager.GetFrameDeltaTime();
-			if (updateTime > directionChangeDelay)
-			{
+			if (updateTime > directionChangeDelay) {
 				expertSystem.SetFactValue(AgentFacts.CHANGE_DIRECTION_TIME, true);
 				updateTime = 0;
 			}
