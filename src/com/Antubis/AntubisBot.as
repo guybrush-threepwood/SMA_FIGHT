@@ -144,14 +144,18 @@
 		{
 			var collidedAgent:Agent = _event.GetAgent();
 			super.onAgentCollide(_event);
-			if (collidedAgent.GetType() == CustomAgentType.ANTUBIS_BOT) {
-				if ((collidedAgent  as Bot).GetTeamId() == teamId) {
-					Chat(collidedAgent as AntubisBot);
+			if (IsPercieved(collidedAgent)) {
+				if (collidedAgent.GetType() == CustomAgentType.ANTUBIS_BOT) {
+					if ((collidedAgent  as Bot).GetTeamId() == teamId) {
+						Chat(collidedAgent as AntubisBot);
+					}
 				}
 			} else if (IsCollided(collidedAgent)) {
 				if (collidedAgent.GetType() != AgentType.AGENT_BOT_HOME && collidedAgent.GetType() != AgentType.AGENT_RESOURCE) {
 					if ((collidedAgent as Bot).HasResource() && !hasResource) {
-						StealResource(collidedAgent as Bot);
+						if((collidedAgent  as Bot).GetTeamId() != teamId) {
+							StealResource(collidedAgent as Bot);
+						}
 					}
 				}
 			}
@@ -166,6 +170,9 @@
 			} else if (takenResource != null) {
 				direction = takenResource.GetTargetPoint().subtract(targetPoint);
 				direction.normalize(1);
+				if (takenResource.IsDead()) {
+					takenResource = null;
+				}
 			}
 		}
 		
