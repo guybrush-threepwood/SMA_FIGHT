@@ -65,7 +65,6 @@
 			
 			expertSystem.AddRule(new Rule(AgentFacts.CHANGE_DIRECTION, new Array(	AgentFacts.CHANGE_DIRECTION_TIME, 
 																					AgentFacts.NOTHING_SEEN,
-																					AgentFacts.NO_RESOURCE,
 																					CustomBotFacts.NO_RESOURCE_FOUND)));
 		}
 		
