@@ -21,6 +21,8 @@
 		public static const RESOURCE_FOUND:Fact 	= new Fact("Found a resource");
 		
 		public static const NO_RESOURCE_FOUND:Fact 	= new Fact("Found no resource");
+		
+		public static const NEAR_EDGES:Fact			= new Fact("Near one of the world's edges");
 	}
 
 }

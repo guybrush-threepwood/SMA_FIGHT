@@ -8,6 +8,7 @@
 	import com.novabox.MASwithTwoNests.AgentFacts;
 	import com.novabox.MASwithTwoNests.TimeManager;
 	import com.novabox.MASwithTwoNests.Agent;
+	import com.novabox.MASwithTwoNests.World;
 	import com.novabox.MASwithTwoNests.Resource;
 	import com.novabox.expertSystem.Fact;
 	import com.novabox.expertSystem.Rule;
@@ -32,11 +33,9 @@
 
 	public class AntubisBot extends Bot {
 		
-		protected var not_moving:Boolean;
-		protected var old_pos:Point;
+		private static const LIMIT:Number = 10;
 		
 		public override function AntubisBot(_type:AgentType) {
-			old_pos = new Point( -1, -1);
 			super(_type);
 		}
 		
@@ -63,16 +62,20 @@
 			expertSystem.AddRule(new Rule(AgentFacts.PUT_DOWN_RESOURCE,	new Array(	AgentFacts.AT_HOME,
 																					AgentFacts.GOT_RESOURCE)));
 			
-			expertSystem.AddRule(new Rule(AgentFacts.CHANGE_DIRECTION, new Array(	AgentFacts.CHANGE_DIRECTION_TIME, 
-																					AgentFacts.NOTHING_SEEN,
-																					CustomBotFacts.NO_RESOURCE_FOUND)));
+			expertSystem.AddRule(new Rule(AgentFacts.CHANGE_DIRECTION, new Array(	CustomBotFacts.NEAR_EDGES,
+																					AgentFacts.CHANGE_DIRECTION_TIME)));
 		}
 		
 		protected override function UpdateFacts() : void {
 			updateTime += TimeManager.timeManager.GetFrameDeltaTime();
-			if (updateTime > directionChangeDelay) {
+			if (updateTime > directionChangeDelay)
+			{
 				expertSystem.SetFactValue(AgentFacts.CHANGE_DIRECTION_TIME, true);
 				updateTime = 0;
+			}
+			
+			if ( x <= LIMIT || x >= World.WORLD_WIDTH - LIMIT || y <= LIMIT || y >= World.WORLD_HEIGHT - LIMIT) {
+				expertSystem.SetFactValue(CustomBotFacts.NEAR_EDGES, true);
 			}
 		
 			if (hasResource) {
