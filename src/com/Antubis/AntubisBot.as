@@ -175,7 +175,6 @@
 			}
 			
 			if (seenResource != null && PerceivableOtherTeamBotsOnIt >= seenResource.GetLife() / World.RESOURCE_UPDATE_VALUE) {
-					seenResource = null;
 					too_much_team_bots = true;
 			}
 			if(seenBot.GetSeenResource() != null) {
