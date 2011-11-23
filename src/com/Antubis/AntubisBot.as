@@ -76,7 +76,9 @@
 																					AgentFacts.CHANGE_DIRECTION_TIME)));
 			
 			expertSystem.AddRule(new Rule(AgentFacts.CHANGE_DIRECTION, new Array(	AgentFacts.CHANGE_DIRECTION_TIME,
-																					CustomBotFacts.TOO_MUCH_PEOPLE)));
+																					CustomBotFacts.TOO_MUCH_PEOPLE,
+																					AgentFacts.GO_TO_RESOURCE,
+																					AgentFacts.NO_RESOURCE)));
 		}
 		
 		protected override function UpdateFacts() : void {
@@ -178,7 +180,7 @@
 				}
 			}
 			
-			if (seenResource != null && PerceivableOtherTeamBotsOnIt > (seenResource.GetLife() / World.RESOURCE_UPDATE_VALUE) + 1) {
+			if (seenResource != null && PerceivableOtherTeamBotsOnIt > (seenResource.GetLife() / World.RESOURCE_UPDATE_VALUE)) {
 					too_much_team_bots = true;
 			}
 			if(seenBot.GetSeenResource() != null) {
@@ -187,7 +189,9 @@
 						seenResource = seenBot.GetSeenResource();
 					}
 					if (takenResource == null || seenBot.GetTakenResource() != null && takenResource.GetLife() < seenBot.GetTakenResource().GetLife()) {
-						takenResource = seenBot.GetTakenResource();
+						if(seenBot.GetSeenResource() != seenBot.GetTakenResource()) {
+							takenResource = seenBot.GetTakenResource();
+						}
 					}
 				}
 			}
@@ -200,8 +204,12 @@
 				direction.normalize(1);
 				seenResource = null;
 			} else if (takenResource != null) {
-				direction = takenResource.GetTargetPoint().subtract(targetPoint);
-				direction.normalize(1);
+				if(!takenResource.IsDead()) {
+					direction = takenResource.GetTargetPoint().subtract(targetPoint);
+					direction.normalize(1);
+				} else {
+					takenResource = null;
+				}
 			}
 		}
 		
@@ -215,11 +223,17 @@
 		
 		public function GetSeenResource() : Resource
 		{
+			if(seenResource != null && seenResource.IsDead()) {
+				seenResource = null;
+			}
 			return seenResource;
 		}
 		
 		public function GetTakenResource() : Resource
 		{
+			if (takenResource != null && takenResource.IsDead()) {
+				takenResource = null;
+			}
 			return takenResource;
 		}
 	}
