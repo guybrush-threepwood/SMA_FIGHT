@@ -74,6 +74,8 @@
 			
 			expertSystem.AddRule(new Rule(AgentFacts.CHANGE_DIRECTION, new Array(	CustomBotFacts.NEAR_EDGES,
 																					AgentFacts.CHANGE_DIRECTION_TIME)));
+																					
+			expertSystem.AddRule(new Rule(AgentFacts.CHANGE_DIRECTION, new Array(	AgentFacts.PUT_DOWN_RESOURCE)));
 			
 			//expertSystem.AddRule(new Rule(AgentFacts.CHANGE_DIRECTION, new Array(	AgentFacts.CHANGE_DIRECTION_TIME,
 			//																		CustomBotFacts.TOO_MUCH_PEOPLE,
