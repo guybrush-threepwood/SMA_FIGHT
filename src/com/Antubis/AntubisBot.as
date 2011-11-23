@@ -155,14 +155,10 @@
 							seenBots.push(collidedAgent as AntubisBot);
 						}
 						Chat(collidedAgent as AntubisBot);
-					}
-				}
-			} else if (IsCollided(collidedAgent)) {
-				if (collidedAgent.GetType() != AgentType.AGENT_BOT_HOME && collidedAgent.GetType() != AgentType.AGENT_RESOURCE) {
-					if ((collidedAgent as Bot).HasResource() && !hasResource) {
-						if((collidedAgent  as Bot).GetTeamId() != teamId) {
-							StealResource(collidedAgent as Bot);
-						}
+					} else {
+							if ((collidedAgent as Bot).HasResource() && !hasResource) {
+								StealResource(collidedAgent as Bot);
+							}
 					}
 				}
 			}
