@@ -178,7 +178,7 @@
 				}
 			}
 			
-			if (seenResource != null && PerceivableOtherTeamBotsOnIt >= seenResource.GetLife() / World.RESOURCE_UPDATE_VALUE) {
+			if (seenResource != null && PerceivableOtherTeamBotsOnIt > (seenResource.GetLife() / World.RESOURCE_UPDATE_VALUE) + 1) {
 					too_much_team_bots = true;
 			}
 			if(seenBot.GetSeenResource() != null) {
