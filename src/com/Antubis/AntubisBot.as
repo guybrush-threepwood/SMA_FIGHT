@@ -148,7 +148,7 @@
 		{
 			var collidedAgent:Agent = _event.GetAgent();
 			super.onAgentCollide(_event);
-			if (IsPercieved(collidedAgent)) {
+			if (IsPercieved(collidedAgent) || IsCollided(collidedAgent)) {
 				if ((collidedAgent as Bot) != null) {
 					if ((collidedAgent  as Bot).GetTeamId() == teamId) {
 						if(seenBots.indexOf(collidedAgent as AntubisBot) == -1) {
