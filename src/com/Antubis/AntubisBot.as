@@ -52,11 +52,13 @@
 			
 			expertSystem.AddRule(new Rule(AgentFacts.GO_TO_RESOURCE, 	new Array(	AgentFacts.NO_RESOURCE,
 																					AgentFacts.SEE_RESOURCE,
+																					CustomBotFacts.NO_CLOSER_RESOURCE,
 																					CustomBotFacts.NOT_TOO_MUCH_PEOPLE)));
 			
 			expertSystem.AddRule(new Rule(AgentFacts.GO_TO_RESOURCE, 	new Array(	AgentFacts.NO_RESOURCE,
 																					AgentFacts.SEE_RESOURCE,
 																					AgentFacts.BIGGER_RESOURCE,
+																					CustomBotFacts.CLOSER_RESOURCE,
 																					CustomBotFacts.NOT_TOO_MUCH_PEOPLE)));
 			
 			expertSystem.AddRule(new Rule(AgentFacts.GO_TO_RESOURCE, 	new Array(	AgentFacts.NO_RESOURCE,
@@ -110,10 +112,18 @@
 			
 			if(seenResource) {
 				expertSystem.SetFactValue(AgentFacts.SEE_RESOURCE, true);
-				if (takenResource != null && seenResource.GetLife() > takenResource.GetLife()) {
-					expertSystem.SetFactValue(AgentFacts.BIGGER_RESOURCE, true);
-				} else {
-					expertSystem.SetFactValue(AgentFacts.SMALLER_RESOURCE, true);
+				if (takenResource != null) {
+					if(seenResource.GetLife() > takenResource.GetLife()) {
+						expertSystem.SetFactValue(AgentFacts.BIGGER_RESOURCE, true);
+					} else {
+						expertSystem.SetFactValue(AgentFacts.SMALLER_RESOURCE, true);
+					}
+					if (Point.distance(new Point(takenResource.x, takenResource.y), new Point(x, y)) > 
+						Point.distance(new Point(seenResource.x, seenResource.y), new Point(x, y))) {
+							expertSystem.SetFactValue(CustomBotFacts.CLOSER_RESOURCE, true);
+						} else {
+							expertSystem.SetFactValue(CustomBotFacts.NO_CLOSER_RESOURCE, true);
+						}
 				}
 			} else {
 				expertSystem.SetFactValue(AgentFacts.NOTHING_SEEN, true);
@@ -123,7 +133,7 @@
 				expertSystem.SetFactValue(AgentFacts.REACHED_RESOURCE, true);
 			}
 			
-			if (takenResource != null && takenResource.GetLife() > 0) {
+			if (takenResource != null && !takenResource.IsDead()) {
 				expertSystem.SetFactValue(CustomBotFacts.RESOURCE_FOUND, true);
 			} else {
 				expertSystem.SetFactValue(CustomBotFacts.NO_RESOURCE_FOUND, true);

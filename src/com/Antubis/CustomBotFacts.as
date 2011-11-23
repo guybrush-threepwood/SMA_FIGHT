@@ -26,7 +26,12 @@
 		
 		public static const TOO_MUCH_PEOPLE:Fact	= new Fact("Too much people of my team on this resource.");
 		
-		public static const NOT_TOO_MUCH_PEOPLE:Fact	= new Fact("Not too much people of my team on this resource.");
+		public static const NOT_TOO_MUCH_PEOPLE:Fact= new Fact("Not too much people of my team on this resource.");
+		
+		public static const CLOSER_RESOURCE:Fact	= new Fact("Another resource is closer.");
+		
+		public static const NO_CLOSER_RESOURCE:Fact	= new Fact("No other and closer resource.");
+		
 	}
 
 }
