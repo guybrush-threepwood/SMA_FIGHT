@@ -33,9 +33,10 @@
 
 	public class AntubisBot extends Bot {
 		
-		private static const LIMIT:Number = 10;
+		private static const LIMIT:Number = 4;
 		private var seenBots:Array;
 		private var too_much_team_bots:Boolean = false;
+		private var LastSeenResourcePos:Point;
 		
 		public override function AntubisBot(_type:AgentType) {
 			seenBots = new Array();
@@ -52,15 +53,11 @@
 			
 			expertSystem.AddRule(new Rule(AgentFacts.GO_TO_RESOURCE, 	new Array(	AgentFacts.NO_RESOURCE,
 																					AgentFacts.SEE_RESOURCE,
-																					//CustomBotFacts.NO_CLOSER_RESOURCE,
 																					CustomBotFacts.NOT_TOO_MUCH_PEOPLE)));
 			
 			expertSystem.AddRule(new Rule(AgentFacts.GO_TO_RESOURCE, 	new Array(	AgentFacts.NO_RESOURCE,
 																					AgentFacts.SEE_RESOURCE,
-																					//AgentFacts.BIGGER_RESOURCE,
-																					CustomBotFacts.CLOSER_RESOURCE
-																					//CustomBotFacts.NOT_TOO_MUCH_PEOPLE
-																					)));
+																					CustomBotFacts.CLOSER_RESOURCE)));
 			
 			expertSystem.AddRule(new Rule(AgentFacts.GO_TO_RESOURCE, 	new Array(	AgentFacts.NO_RESOURCE,
 																					AgentFacts.NOTHING_SEEN,
@@ -75,15 +72,7 @@
 			expertSystem.AddRule(new Rule(AgentFacts.PUT_DOWN_RESOURCE,	new Array(	AgentFacts.AT_HOME,
 																					AgentFacts.GOT_RESOURCE)));
 			
-			expertSystem.AddRule(new Rule(AgentFacts.CHANGE_DIRECTION, new Array(	CustomBotFacts.NEAR_EDGES,
-																					AgentFacts.CHANGE_DIRECTION_TIME)));
-																					
-			expertSystem.AddRule(new Rule(AgentFacts.CHANGE_DIRECTION, new Array(	AgentFacts.PUT_DOWN_RESOURCE)));
-			
-			//expertSystem.AddRule(new Rule(AgentFacts.CHANGE_DIRECTION, new Array(	AgentFacts.CHANGE_DIRECTION_TIME,
-			//																		CustomBotFacts.TOO_MUCH_PEOPLE,
-			//																		AgentFacts.GO_TO_RESOURCE,
-			//																		AgentFacts.NO_RESOURCE)));
+			expertSystem.AddRule(new Rule(AgentFacts.CHANGE_DIRECTION, new Array(	CustomBotFacts.NEAR_EDGES)));
 		}
 		
 		protected override function UpdateFacts() : void {
@@ -134,7 +123,7 @@
 				expertSystem.SetFactValue(AgentFacts.REACHED_RESOURCE, true);
 			}
 			
-			if (takenResource != null && !takenResource.IsDead()) {
+			if (LastSeenResourcePos) {
 				expertSystem.SetFactValue(CustomBotFacts.RESOURCE_FOUND, true);
 			} else {
 				expertSystem.SetFactValue(CustomBotFacts.NO_RESOURCE_FOUND, true);
@@ -159,6 +148,10 @@
 		{
 			var collidedAgent:Agent = _event.GetAgent();
 			super.onAgentCollide(_event);
+			if(seenResource != null) {
+				LastSeenResourcePos = seenResource.GetCurrentPoint();
+			}
+			
 			if (IsPercieved(collidedAgent) || IsCollided(collidedAgent)) {
 				if ((collidedAgent as Bot) != null) {
 					if ((collidedAgent  as Bot).GetTeamId() == teamId) {
@@ -189,7 +182,7 @@
 				}
 			}
 			
-			if (seenResource != null && PerceivableOtherTeamBotsOnIt > (seenResource.GetLife() / World.RESOURCE_UPDATE_VALUE)) {
+			if (seenResource != null && PerceivableOtherTeamBotsOnIt > ((seenResource.GetLife() / World.RESOURCE_UPDATE_VALUE) + 1)) {
 					too_much_team_bots = true;
 			}
 			if(seenBot.GetSeenResource() != null) {
@@ -207,18 +200,11 @@
 		}
 		
 		public override function GoToResource():void {
-			
-			if (seenResource != null) {
-				direction = seenResource.GetTargetPoint().subtract(targetPoint);
+			if(LastSeenResourcePos != null) {
+				direction = LastSeenResourcePos.subtract(targetPoint);
 				direction.normalize(1);
+				LastSeenResourcePos = null;
 				seenResource = null;
-			} else if (takenResource != null) {
-				if(!takenResource.IsDead()) {
-					direction = takenResource.GetTargetPoint().subtract(targetPoint);
-					direction.normalize(1);
-				} else {
-					takenResource = null;
-				}
 			}
 		}
 		
