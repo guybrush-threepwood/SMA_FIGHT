@@ -82,15 +82,11 @@
 			}
 			
 			if(seenResource) {
-				expertSystem.SetFactValue(AgentFacts.SEE_RESOURCE, true);
-				if (takenResource != null) {
-					if (Point.distance(new Point(takenResource.x, takenResource.y), new Point(x, y)) > 
-						Point.distance(new Point(seenResource.x, seenResource.y), new Point(x, y))) {
-							expertSystem.SetFactValue(CustomBotFacts.CLOSER_RESOURCE, true);
-						} else {
-							expertSystem.SetFactValue(CustomBotFacts.NO_CLOSER_RESOURCE, true);
-						}
-				}
+				expertSystem.SetFactValue(AgentFacts.SEE_RESOURCE, true);				
+				if (Point.distance(new Point(direction.x, direction.y), new Point(x, y)) > 
+					Point.distance(new Point(seenResource.x, seenResource.y), new Point(x, y))) {
+						expertSystem.SetFactValue(CustomBotFacts.CLOSER_RESOURCE, true);
+					}
 			} else {
 				expertSystem.SetFactValue(AgentFacts.NOTHING_SEEN, true);
 			}
