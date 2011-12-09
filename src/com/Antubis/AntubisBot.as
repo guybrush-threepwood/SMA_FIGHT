@@ -33,19 +33,11 @@
 
 	public class AntubisBot extends Bot {
 		
-		private static const LIMIT:Number = 6;
-		private var seenBots:Array;
-		private var too_much_team_bots:Boolean = false;
-		private var LastSeenResourcePos:Point;
+		private static const EDGE_LIMIT:Number = 6;
+		private var LastSeenResource:Point;
 		
 		public override function AntubisBot(_type:AgentType) {
-			seenBots = new Array();
 			super(_type);
-		}
-		
-		public override function Update():void {
-			super.Update();
-			too_much_team_bots = false;
 		}
 		
 		protected override function InitExpertSystem() : void {
@@ -57,10 +49,6 @@
 			expertSystem.AddRule(new Rule(AgentFacts.GO_TO_RESOURCE, 	new Array(	AgentFacts.NO_RESOURCE,
 																					AgentFacts.SEE_RESOURCE,
 																					CustomBotFacts.CLOSER_RESOURCE)));
-			
-			expertSystem.AddRule(new Rule(AgentFacts.GO_TO_RESOURCE, 	new Array(	AgentFacts.NO_RESOURCE,
-																					AgentFacts.NOTHING_SEEN,
-																					CustomBotFacts.RESOURCE_FOUND)));
 
 			expertSystem.AddRule(new Rule(AgentFacts.TAKE_RESOURCE, 	new Array(	AgentFacts.NO_RESOURCE,
 																					AgentFacts.REACHED_RESOURCE)));
@@ -82,14 +70,8 @@
 				updateTime = 0;
 			}
 			
-			if ( x <= LIMIT || x >= World.WORLD_WIDTH - LIMIT || y <= LIMIT || y >= World.WORLD_HEIGHT - LIMIT) {
+			if (IsNearEdges()) {
 				expertSystem.SetFactValue(CustomBotFacts.NEAR_EDGES, true);
-			}
-			
-			if (too_much_team_bots) {
-				expertSystem.SetFactValue(CustomBotFacts.TOO_MUCH_PEOPLE, true);
-			} else {
-				expertSystem.SetFactValue(CustomBotFacts.NOT_TOO_MUCH_PEOPLE, true);
 			}
 			
 			if (hasResource) {
@@ -102,11 +84,6 @@
 			if(seenResource) {
 				expertSystem.SetFactValue(AgentFacts.SEE_RESOURCE, true);
 				if (takenResource != null) {
-					if(seenResource.GetLife() > takenResource.GetLife()) {
-						expertSystem.SetFactValue(AgentFacts.BIGGER_RESOURCE, true);
-					} else {
-						expertSystem.SetFactValue(AgentFacts.SMALLER_RESOURCE, true);
-					}
 					if (Point.distance(new Point(takenResource.x, takenResource.y), new Point(x, y)) > 
 						Point.distance(new Point(seenResource.x, seenResource.y), new Point(x, y))) {
 							expertSystem.SetFactValue(CustomBotFacts.CLOSER_RESOURCE, true);
@@ -120,12 +97,6 @@
 			
 			if (reachedResource) {
 				expertSystem.SetFactValue(AgentFacts.REACHED_RESOURCE, true);
-			}
-			
-			if (LastSeenResourcePos) {
-				expertSystem.SetFactValue(CustomBotFacts.RESOURCE_FOUND, true);
-			} else {
-				expertSystem.SetFactValue(CustomBotFacts.NO_RESOURCE_FOUND, true);
 			}
 			
 			if(homePosition) {
@@ -143,66 +114,35 @@
 			}
 		}
 		
-		public override function onAgentCollide(_event:AgentCollideEvent) : void
-		{
+		public override function onAgentCollide(_event:AgentCollideEvent) : void  {
 			var collidedAgent:Agent = _event.GetAgent();
 			super.onAgentCollide(_event);
+			
 			if(seenResource != null) {
-				LastSeenResourcePos = seenResource.GetCurrentPoint();
+				LastSeenResource = seenResource.GetCurrentPoint();
 			}
 			
-			if (IsPercieved(collidedAgent) || IsCollided(collidedAgent)) {
-				if ((collidedAgent as Bot) != null) {
-					if ((collidedAgent  as Bot).GetTeamId() == teamId) {
-						if(seenBots.indexOf(collidedAgent as AntubisBot) == -1) {
-							seenBots.push(collidedAgent as AntubisBot);
-						}
-						Chat(collidedAgent as AntubisBot);
-					} else {
-							if ((collidedAgent as Bot).HasResource() && !hasResource) {
-								StealResource(collidedAgent as Bot);
-							}
-					}
-				}
-			}
-		}
-		
-		public function Chat(seenBot:AntubisBot):void {
-			var i:Number = 0;
-			var PerceivableOtherTeamBotsOnIt:Number = 0;
-			for (i = 0; i < seenBots.length; i++) {
-				if (IsPercieved(seenBots[i])) {
-					if (homePosition == null) {
-						homePosition = seenBots[i].GetHomePosition();
-					}
-					if (seenResource == seenBots[i].GetSeenResource() && !seenBots[i].HasResource()) {
-						PerceivableOtherTeamBotsOnIt ++;
-					}
+			if ((collidedAgent as Bot) != null) {
+				if ((collidedAgent  as Bot).GetTeamId() == teamId) {
+					Chat(collidedAgent as AntubisBot);
+				} else if ((collidedAgent as Bot).HasResource() && !hasResource) {
+					StealResource(collidedAgent as Bot);
 				}
 			}
 			
-			if (seenResource != null && PerceivableOtherTeamBotsOnIt > ((seenResource.GetLife() / World.RESOURCE_UPDATE_VALUE) + 1)) {
-					too_much_team_bots = true;
-			}
-			if(seenBot.GetSeenResource() != null) {
-				if(!too_much_team_bots) {
-					if (seenResource == null || seenBot.GetSeenResource() != null && seenResource.GetLife() < seenBot.GetSeenResource().GetLife()) {
-						seenResource = seenBot.GetSeenResource();
-					}
-					if (takenResource == null || seenBot.GetTakenResource() != null && takenResource.GetLife() < seenBot.GetTakenResource().GetLife()) {
-						if(seenBot.GetSeenResource() != seenBot.GetTakenResource()) {
-							takenResource = seenBot.GetTakenResource();
-						}
-					}
-				}
+		}
+		
+		public function Chat(seenBot:AntubisBot) : void {
+			if (seenResource == null) {
+				seenResource = seenBot.GetSeenResource();
 			}
 		}
 		
-		public override function GoToResource():void {
-			if(LastSeenResourcePos != null) {
-				direction = LastSeenResourcePos.subtract(targetPoint);
+		public override function GoToResource() : void {
+			if(LastSeenResource != null) {
+				direction = LastSeenResource.subtract(targetPoint);
 				direction.normalize(1);
-				LastSeenResourcePos = null;
+				LastSeenResource = null;
 				seenResource = null;
 			}
 		}
@@ -215,20 +155,13 @@
 			}
 		}
 		
-		public function GetSeenResource() : Resource
-		{
-			if(seenResource != null) {
-				seenResource = null;
-			}
+		public function GetSeenResource() : Resource {
 			return seenResource;
 		}
 		
-		public function GetTakenResource() : Resource
-		{
-			if (takenResource != null) {
-				takenResource = null;
-			}
-			return takenResource;
+		public function IsNearEdges() : Boolean {
+			return (x <= EDGE_LIMIT || x >= World.WORLD_WIDTH - EDGE_LIMIT ||
+					y <= EDGE_LIMIT || y >= World.WORLD_HEIGHT - EDGE_LIMIT);
 		}
 	}
 }

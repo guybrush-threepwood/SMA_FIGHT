@@ -15,22 +15,12 @@
 	//*****************************************************************
 
 	public class CustomBotFacts
-	{		
-		//public static const CUSTOM_FACT:Fact = new Fact("");
-		
-		public static const RESOURCE_FOUND:Fact 	= new Fact("Found a resource");
-		
-		public static const NO_RESOURCE_FOUND:Fact 	= new Fact("Found no resource");
-		
+	{
 		public static const NEAR_EDGES:Fact			= new Fact("Near one of the world's edges");
-		
-		public static const TOO_MUCH_PEOPLE:Fact	= new Fact("Too much people of my team on this resource.");
-		
-		public static const NOT_TOO_MUCH_PEOPLE:Fact= new Fact("Not too much people of my team on this resource.");
 		
 		public static const CLOSER_RESOURCE:Fact	= new Fact("Another resource is closer.");
 		
-		public static const NO_CLOSER_RESOURCE:Fact	= new Fact("No other and closer resource.");
+		public static const NO_CLOSER_RESOURCE:Fact	= new Fact("No closer resource.");
 		
 	}
 
