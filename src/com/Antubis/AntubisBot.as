@@ -56,7 +56,7 @@
 			
 			expertSystem.AddRule(new Rule(AgentFacts.GO_TO_RESOURCE, 	new Array(	AgentFacts.NO_RESOURCE,
 																					AgentFacts.SEE_RESOURCE,
-																					CustomBotFacts.CLOSER_RESOURCE));
+																					CustomBotFacts.CLOSER_RESOURCE)));
 			
 			expertSystem.AddRule(new Rule(AgentFacts.GO_TO_RESOURCE, 	new Array(	AgentFacts.NO_RESOURCE,
 																					AgentFacts.NOTHING_SEEN,
