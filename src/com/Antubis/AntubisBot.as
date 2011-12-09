@@ -33,7 +33,7 @@
 
 	public class AntubisBot extends Bot {
 		
-		private static const LIMIT:Number = 4;
+		private static const LIMIT:Number = 6;
 		private var seenBots:Array;
 		private var too_much_team_bots:Boolean = false;
 		private var LastSeenResourcePos:Point;
@@ -52,12 +52,11 @@
 			expertSystem = new ExpertSystem();
 			
 			expertSystem.AddRule(new Rule(AgentFacts.GO_TO_RESOURCE, 	new Array(	AgentFacts.NO_RESOURCE,
-																					AgentFacts.SEE_RESOURCE,
-																					CustomBotFacts.NOT_TOO_MUCH_PEOPLE)));
+																					AgentFacts.SEE_RESOURCE)));
 			
 			expertSystem.AddRule(new Rule(AgentFacts.GO_TO_RESOURCE, 	new Array(	AgentFacts.NO_RESOURCE,
 																					AgentFacts.SEE_RESOURCE,
-																					CustomBotFacts.CLOSER_RESOURCE)));
+																					CustomBotFacts.CLOSER_RESOURCE));
 			
 			expertSystem.AddRule(new Rule(AgentFacts.GO_TO_RESOURCE, 	new Array(	AgentFacts.NO_RESOURCE,
 																					AgentFacts.NOTHING_SEEN,
@@ -218,7 +217,7 @@
 		
 		public function GetSeenResource() : Resource
 		{
-			if(seenResource != null && seenResource.IsDead()) {
+			if(seenResource != null) {
 				seenResource = null;
 			}
 			return seenResource;
@@ -226,7 +225,7 @@
 		
 		public function GetTakenResource() : Resource
 		{
-			if (takenResource != null && takenResource.IsDead()) {
+			if (takenResource != null) {
 				takenResource = null;
 			}
 			return takenResource;
