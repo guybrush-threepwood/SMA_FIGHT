@@ -132,6 +132,9 @@
 			if (seenResource == null) {
 				seenResource = seenBot.GetSeenResource();
 			}
+			if (homePosition == null) {
+				homePosition = seenBot.GetHomePosition();
+			}
 		}
 		
 		public override function GoToResource() : void {
