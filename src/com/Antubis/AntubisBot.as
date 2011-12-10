@@ -22,7 +22,7 @@
 	 * Part 2 : Two distinct termite nests
 	 * (Termites collecting wood)
 	 * 
-	 * @author Ophir / Nova-box
+	 * @author Maximilien Noal & Antubis Team
 	 * @version 1.1
 	 */
 	 
