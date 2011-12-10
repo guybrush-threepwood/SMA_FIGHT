@@ -59,7 +59,7 @@
 			expertSystem.AddRule(new Rule(AgentFacts.PUT_DOWN_RESOURCE,	new Array(	AgentFacts.AT_HOME,
 																					AgentFacts.GOT_RESOURCE)));
 			
-			expertSystem.AddRule(new Rule(AgentFacts.CHANGE_DIRECTION, new Array(	CustomBotFacts.NEAR_EDGES)));
+			expertSystem.AddRule(new Rule(AgentFacts.CHANGE_DIRECTION, 	new Array(	CustomBotFacts.NEAR_EDGES)));
 		}
 		
 		protected override function UpdateFacts() : void {
@@ -81,12 +81,14 @@
 				expertSystem.SetFactValue(AgentFacts.NO_RESOURCE, true);
 			}
 			
-			if(seenResource) {
-				expertSystem.SetFactValue(AgentFacts.SEE_RESOURCE, true);				
-				if (Point.distance(new Point(direction.x, direction.y), new Point(x, y)) > 
-					Point.distance(new Point(seenResource.x, seenResource.y), new Point(x, y))) {
-						expertSystem.SetFactValue(CustomBotFacts.CLOSER_RESOURCE, true);
-					}
+			if(LastSeenResource) {
+				expertSystem.SetFactValue(AgentFacts.SEE_RESOURCE, true);
+				if(seenResource) {
+					if (Point.distance(new Point(direction.x, direction.y), new Point(x, y)) > 
+						Point.distance(new Point(seenResource.x, seenResource.y), new Point(x, y))) {
+							expertSystem.SetFactValue(CustomBotFacts.CLOSER_RESOURCE, true);
+						}
+				}
 			} else {
 				expertSystem.SetFactValue(AgentFacts.NOTHING_SEEN, true);
 			}
@@ -129,8 +131,8 @@
 		}
 		
 		public function Chat(seenBot:AntubisBot) : void {
-			if (seenResource == null) {
-				seenResource = seenBot.GetSeenResource();
+			if (LastSeenResource == null) {
+				LastSeenResource = seenBot.GetLastSeenResource();
 			}
 			if (homePosition == null) {
 				homePosition = seenBot.GetHomePosition();
@@ -138,12 +140,12 @@
 		}
 		
 		public override function GoToResource() : void {
-			if(LastSeenResource != null) {
-				direction = LastSeenResource.subtract(targetPoint);
-				direction.normalize(1);
-				LastSeenResource = null;
-				seenResource = null;
-			}
+			direction = LastSeenResource.subtract(targetPoint);
+			direction.normalize(1);
+			LastSeenResource = null;
+			seenResource = null;
+			takenResource = null;
+			lastReachedResource = null;
 		}
 		
 		protected function IsAtHome() : Boolean {
@@ -154,8 +156,8 @@
 			}
 		}
 		
-		public function GetSeenResource() : Resource {
-			return seenResource;
+		public function GetLastSeenResource() : Point {
+			return LastSeenResource;
 		}
 		
 		public function IsNearEdges() : Boolean {
