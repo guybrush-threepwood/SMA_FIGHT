@@ -14,13 +14,10 @@
 	// TODO : Register here all new agent types (Bot and Messages)
 	//*****************************************************************
 	 
-	public class CustomAgentType
-	{
-		
-		public static const ANTUBIS_BOT:AgentType = new AgentType(	AntubisBot,		// Bot Class
-																	1				// Bot ratio in team
-																);													
-			
+	public class CustomAgentType {
+		public static const ANTUBIS_BOT:AgentType = new AgentType(	AntubisBot,	// Bot Class
+																	1			// Bot ratio in team
+																	);
 	}
 
 }
