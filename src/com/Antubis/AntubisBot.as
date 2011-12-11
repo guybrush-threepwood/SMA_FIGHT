@@ -34,7 +34,8 @@
 	public class AntubisBot extends Bot {
 		
 		private static const EDGE_LIMIT:Number = 6;
-		private var LastSeenResource:Point;
+		private var lastSeenResource:Point;
+		private var lastDropedPhero:Phero;
 		
 		public override function AntubisBot(_type:AgentType) {
 			super(_type);
@@ -49,6 +50,16 @@
 			expertSystem.AddRule(new Rule(AgentFacts.GO_TO_RESOURCE, 	new Array(	AgentFacts.NO_RESOURCE,
 																					AgentFacts.SEE_RESOURCE,
 																					CustomBotFacts.CLOSER_RESOURCE)));
+																					
+			expertSystem.AddRule(new Rule(CustomBotFacts.DROP_PHERO,	new Array(	CustomBotFacts.UPDATE_TIME,
+																					AgentFacts.SEE_RESOURCE)));
+																					
+			expertSystem.AddRule(new Rule(CustomBotFacts.DROP_PHERO,	new Array(	CustomBotFacts.UPDATE_TIME,
+																					AgentFacts.GO_HOME)));
+																					
+			expertSystem.AddRule(new Rule(CustomBotFacts.DROP_PHERO, 	new Array(	CustomBotFacts.UPDATE_TIME,
+																					AgentFacts.SEEING_HOME,
+																					AgentFacts.NO_RESOURCE)));
 
 			expertSystem.AddRule(new Rule(AgentFacts.TAKE_RESOURCE, 	new Array(	AgentFacts.NO_RESOURCE,
 																					AgentFacts.REACHED_RESOURCE)));
@@ -64,9 +75,9 @@
 		
 		protected override function UpdateFacts() : void {
 			updateTime += TimeManager.timeManager.GetFrameDeltaTime();
-			if (updateTime > directionChangeDelay)
+			if (updateTime > directionChangeDelay*2)
 			{
-				expertSystem.SetFactValue(AgentFacts.CHANGE_DIRECTION_TIME, true);
+				expertSystem.SetFactValue(CustomBotFacts.UPDATE_TIME, true);
 				updateTime = 0;
 			}
 			
@@ -81,7 +92,7 @@
 				expertSystem.SetFactValue(AgentFacts.NO_RESOURCE, true);
 			}
 			
-			if(LastSeenResource) {
+			if(lastSeenResource) {
 				expertSystem.SetFactValue(AgentFacts.SEE_RESOURCE, true);
 				if(seenResource) {
 					if (Point.distance(new Point(direction.x, direction.y), new Point(x, y)) > 
@@ -112,12 +123,50 @@
 			}
 		}
 		
+		protected override function Act() : void {
+			var inferedFacts:Array = expertSystem.GetInferedFacts();
+			
+			for (var i:int = 0; i < inferedFacts.length; i++)
+			{
+				var fact:Fact = (inferedFacts[i] as Fact);
+				
+				switch(fact)
+				{
+					case CustomBotFacts.DROP_PHERO:
+					DropPhero();
+					break;
+					
+					case AgentFacts.CHANGE_DIRECTION:
+					ChangeDirection();
+					break;
+					
+					case AgentFacts.GO_TO_RESOURCE:
+					GoToResource();
+					break;
+					
+					case AgentFacts.GO_HOME:
+					GoHome();
+					break;
+					
+					case AgentFacts.TAKE_RESOURCE:
+					TakeResource();
+					break;
+					
+					case AgentFacts.PUT_DOWN_RESOURCE:
+					PutDownResource();
+					break;
+					
+				}
+			}
+			expertSystem.ResetFacts();
+		}
+		
 		public override function onAgentCollide(_event:AgentCollideEvent) : void  {
 			var collidedAgent:Agent = _event.GetAgent();
 			super.onAgentCollide(_event);
 			
 			if(seenResource != null) {
-				LastSeenResource = seenResource.GetCurrentPoint();
+				lastSeenResource = seenResource.GetCurrentPoint();
 			}
 			
 			if ((collidedAgent as Bot) != null) {
@@ -128,24 +177,50 @@
 				}
 			}
 			
+			if((collidedAgent as Phero != null)) {
+				GetPheroInfos(collidedAgent as Phero);
+			}
+			
 		}
 		
 		public function Chat(seenBot:AntubisBot) : void {
-			if (LastSeenResource == null) {
-				LastSeenResource = seenBot.GetLastSeenResource();
+			if (lastSeenResource == null) {
+				lastSeenResource = seenBot.GetLastSeenResource();
 			}
 			if (homePosition == null) {
 				homePosition = seenBot.GetHomePosition();
 			}
 		}
 		
+		public function GetPheroInfos(phero:Phero) : void {
+			if (phero != lastDropedPhero || lastDropedPhero == null) {
+				if (homePosition == null) {
+					homePosition = phero.GetHomePosition();
+				}
+				if (lastSeenResource == null) {
+					lastSeenResource = phero.GetResourcePos();
+				}
+			}
+		}
+		
 		public override function GoToResource() : void {
-			direction = LastSeenResource.subtract(targetPoint);
+			direction = lastSeenResource.subtract(targetPoint);
 			direction.normalize(1);
-			LastSeenResource = null;
+			lastSeenResource = null;
 			seenResource = null;
 			takenResource = null;
 			lastReachedResource = null;
+		}
+		
+		public function DropPhero() : void {
+			var dropedPhero:Phero;
+			
+			if(seenResource) {
+				Drop(dropedPhero = new Phero(CustomAgentType.PHERO, homePosition, seenResource.GetCurrentPoint()));
+			} else {
+				Drop(dropedPhero = new Phero(CustomAgentType.PHERO, homePosition, lastSeenResource));	
+			}
+			lastDropedPhero = dropedPhero;
 		}
 		
 		protected function IsAtHome() : Boolean {
@@ -156,13 +231,13 @@
 			}
 		}
 		
-		public function GetLastSeenResource() : Point {
-			return LastSeenResource;
-		}
-		
 		public function IsNearEdges() : Boolean {
 			return (x <= EDGE_LIMIT || x >= World.WORLD_WIDTH - EDGE_LIMIT ||
 					y <= EDGE_LIMIT || y >= World.WORLD_HEIGHT - EDGE_LIMIT);
+		}
+		
+		public function GetLastSeenResource() : Point {
+			return lastSeenResource;
 		}
 	}
 }

@@ -20,6 +20,10 @@
 		public static const CLOSER_RESOURCE:Fact	= new Fact("Another resource is closer.");
 		
 		public static const NO_CLOSER_RESOURCE:Fact	= new Fact("No closer resource.");
+		
+		public static const UPDATE_TIME:Fact		= new Fact("Game update.");
+		
+		public static const DROP_PHERO:Fact			= new Fact("Have to drop a new phero.");
 	}
 
 }
