@@ -18,7 +18,7 @@ package com.Antubis
 		protected var homePosition:Point;
 		protected var resourcePosition:Point;
 		protected var lifetime:Number;
-		public static const MAX_LIFETIME:Number = 100;
+		public static const MAX_LIFETIME:Number = 70;
 		
 		public function Phero(_type:AgentType, _home:Point, _resource:Point) 
 		{
@@ -31,7 +31,7 @@ package com.Antubis
 				lifetime = 50;
 				color = color + 0XA;
 			} else {
-				lifetime = 100;
+				lifetime = MAX_LIFETIME;
 				color = color + 0XB;
 			}
 		}
