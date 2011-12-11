@@ -54,12 +54,18 @@
 			expertSystem.AddRule(new Rule(CustomBotFacts.DROP_PHERO,	new Array(	CustomBotFacts.UPDATE_TIME,
 																					AgentFacts.SEE_RESOURCE)));
 																					
-			expertSystem.AddRule(new Rule(CustomBotFacts.DROP_PHERO,	new Array(	CustomBotFacts.UPDATE_TIME,
-																					AgentFacts.GO_HOME)));
+			expertSystem.AddRule(new Rule(CustomBotFacts.DROP_PHERO,	new Array(	AgentFacts.TAKE_RESOURCE,
+																					CustomBotFacts.UPDATE_TIME)));
 																					
 			expertSystem.AddRule(new Rule(CustomBotFacts.DROP_PHERO, 	new Array(	CustomBotFacts.UPDATE_TIME,
 																					AgentFacts.SEEING_HOME,
 																					AgentFacts.NO_RESOURCE)));
+			
+			expertSystem.AddRule(new Rule(CustomBotFacts.DROP_PHERO, 	new Array(	AgentFacts.AT_HOME,
+																					AgentFacts.PUT_DOWN_RESOURCE)));
+																					
+			expertSystem.AddRule(new Rule(CustomBotFacts.DROP_PHERO,	new Array(	AgentFacts.AT_HOME,
+																					CustomBotFacts.UPDATE_TIME)));
 
 			expertSystem.AddRule(new Rule(AgentFacts.TAKE_RESOURCE, 	new Array(	AgentFacts.NO_RESOURCE,
 																					AgentFacts.REACHED_RESOURCE)));
