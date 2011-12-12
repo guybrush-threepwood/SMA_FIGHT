@@ -213,10 +213,12 @@
 		public function DropPhero() : void {
 			var dropedPhero:Phero;
 			
-			if(seenResource) {
-				Drop(dropedPhero = new Phero(CustomAgentType.PHERO, homePosition, seenResource.GetCurrentPoint()));
-			} else {
-				Drop(dropedPhero = new Phero(CustomAgentType.PHERO, homePosition, GetLastSeenResource()));	
+			if(homePosition || GetLastSeenResource || seenResource) {
+				if(seenResource) {
+					Drop(dropedPhero = new Phero(CustomAgentType.PHERO, homePosition, seenResource.GetCurrentPoint()));
+				} else {
+					Drop(dropedPhero = new Phero(CustomAgentType.PHERO, homePosition, GetLastSeenResource()));	
+				}
 			}
 			lastDropedPhero = dropedPhero;
 		}
