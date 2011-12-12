@@ -44,6 +44,7 @@
 		
 		public override function Update() : void {
 			super.Update();
+			CheckLastSeenResource();
 			seenPhero = null;
 		}
 		
@@ -195,6 +196,7 @@
 				}
 				if (lastSeenResource == null) {
 					lastSeenResource = phero.GetResourcePos();
+					CheckLastSeenResource();
 				}
 			}
 		}
@@ -233,12 +235,16 @@
 		}
 		
 		public function GetLastSeenResource() : Point {
+			CheckLastSeenResource();
+			return lastSeenResource;
+		}
+		
+		private function CheckLastSeenResource() : void {
 			if(lastSeenResource) {
 				if (Point.distance(new Point(x, y), lastSeenResource) <= perceptionRadius && !seenResource) {
 					lastSeenResource = null;
 				}
 			}
-			return lastSeenResource;
 		}
 	}
 }
