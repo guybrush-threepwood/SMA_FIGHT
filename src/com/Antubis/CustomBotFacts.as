@@ -15,15 +15,14 @@
 	//*****************************************************************
 
 	public class CustomBotFacts {
-		public static const NEAR_EDGES:Fact			= new Fact("Near one of the world's edges");
 		
-		public static const CLOSER_RESOURCE:Fact	= new Fact("Another resource is closer.");
+		public static const NEAR_EDGES:Fact		= new Fact("Near one of the world's edges");
 		
-		public static const NO_CLOSER_RESOURCE:Fact	= new Fact("No closer resource.");
+		public static const CLOSER_RESOURCE:Fact= new Fact("Another resource is closer.");
 		
-		public static const UPDATE_TIME:Fact		= new Fact("Game update.");
+		public static const NO_PHERO_SEEN:Fact	= new Fact("Can see no phero.");
 		
-		public static const DROP_PHERO:Fact			= new Fact("Have to drop a new phero.");
+		public static const DROP_PHERO:Fact		= new Fact("Droping a new phero.");
 	}
 
 }

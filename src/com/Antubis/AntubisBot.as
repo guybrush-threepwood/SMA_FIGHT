@@ -36,9 +36,15 @@
 		private static const EDGE_LIMIT:Number = 6;
 		private var lastSeenResource:Point;
 		private var lastDropedPhero:Phero;
+		private var seenPhero:Phero;
 		
 		public override function AntubisBot(_type:AgentType) {
 			super(_type);
+		}
+		
+		public override function Update() : void {
+			super.Update();
+			seenPhero = null;
 		}
 		
 		protected override function InitExpertSystem() : void {
@@ -51,28 +57,14 @@
 																					AgentFacts.SEE_RESOURCE,
 																					CustomBotFacts.CLOSER_RESOURCE)));
 																					
-			expertSystem.AddRule(new Rule(CustomBotFacts.DROP_PHERO,	new Array(	CustomBotFacts.UPDATE_TIME,
-																					AgentFacts.SEE_RESOURCE)));
+			expertSystem.AddRule(new Rule(CustomBotFacts.DROP_PHERO,	new Array(	CustomBotFacts.NO_PHERO_SEEN)));
 																					
-			expertSystem.AddRule(new Rule(CustomBotFacts.DROP_PHERO,	new Array(	AgentFacts.TAKE_RESOURCE,
-																					CustomBotFacts.UPDATE_TIME)));
-																					
-			expertSystem.AddRule(new Rule(CustomBotFacts.DROP_PHERO, 	new Array(	CustomBotFacts.UPDATE_TIME,
-																					AgentFacts.SEEING_HOME,
-																					AgentFacts.NO_RESOURCE)));
-			
-			expertSystem.AddRule(new Rule(CustomBotFacts.DROP_PHERO, 	new Array(	AgentFacts.AT_HOME,
-																					AgentFacts.PUT_DOWN_RESOURCE)));
-																					
-			expertSystem.AddRule(new Rule(CustomBotFacts.DROP_PHERO,	new Array(	AgentFacts.AT_HOME,
-																					CustomBotFacts.UPDATE_TIME)));
-
 			expertSystem.AddRule(new Rule(AgentFacts.TAKE_RESOURCE, 	new Array(	AgentFacts.NO_RESOURCE,
 																					AgentFacts.REACHED_RESOURCE)));
 
 			expertSystem.AddRule(new Rule(AgentFacts.GO_HOME, 			new Array(	AgentFacts.GOT_RESOURCE,
 																					AgentFacts.SEEING_HOME)));
-			
+																					
 			expertSystem.AddRule(new Rule(AgentFacts.PUT_DOWN_RESOURCE,	new Array(	AgentFacts.AT_HOME,
 																					AgentFacts.GOT_RESOURCE)));
 			
@@ -80,11 +72,8 @@
 		}
 		
 		protected override function UpdateFacts() : void {
-			updateTime += TimeManager.timeManager.GetFrameDeltaTime();
-			if (updateTime > directionChangeDelay*2)
-			{
-				expertSystem.SetFactValue(CustomBotFacts.UPDATE_TIME, true);
-				updateTime = 0;
+			if (!seenPhero || !IsPercieved(seenPhero)) {
+				expertSystem.SetFactValue(CustomBotFacts.NO_PHERO_SEEN, true);
 			}
 			
 			if (IsNearEdges()) {
@@ -106,7 +95,7 @@
 							expertSystem.SetFactValue(CustomBotFacts.CLOSER_RESOURCE, true);
 						}
 				}
-			} else {
+			} else if (!seenResource) {
 				expertSystem.SetFactValue(AgentFacts.NOTHING_SEEN, true);
 			}
 			
@@ -183,7 +172,8 @@
 				}
 			}
 			
-			if((collidedAgent as Phero != null)) {
+			if ((collidedAgent as Phero != null)) {
+				seenPhero = (collidedAgent as Phero);
 				GetPheroInfos(collidedAgent as Phero);
 			}
 			
