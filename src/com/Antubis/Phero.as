@@ -18,6 +18,7 @@ package com.Antubis
 		protected var homePosition:Point;
 		protected var resourcePosition:Point;
 		protected var lifetime:Number;
+		protected var phero_type:String;
 		public static const MAX_LIFETIME:Number = 200;
 		
 		public function Phero(_type:AgentType, _home:Point, _resource:Point) 
@@ -30,9 +31,13 @@ package com.Antubis
 			if (resourcePosition) {
 				lifetime = 100;
 				color = color + 0XA;
+				phero_type = "Resource"
 			} else {
 				lifetime = MAX_LIFETIME;
 				color = color + 0XB;
+			}
+			if (homePosition) {
+				phero_type = "Home"
 			}
 		}
 		
@@ -68,6 +73,10 @@ package com.Antubis
 		
 		public function GetHomePosition() : Point {
 			return homePosition;
+		}
+		
+		public function GetPheroType() : String {
+			return phero_type;
 		}
 		
 	}
