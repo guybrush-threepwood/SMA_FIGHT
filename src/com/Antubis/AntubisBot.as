@@ -98,7 +98,7 @@
 				expertSystem.SetFactValue(AgentFacts.NO_RESOURCE, true);
 			}
 			
-			if(lastSeenResource) {
+			if(GetLastSeenResource()) {
 				expertSystem.SetFactValue(AgentFacts.SEE_RESOURCE, true);
 				if(seenResource) {
 					if (Point.distance(new Point(direction.x, direction.y), new Point(x, y)) > 
@@ -224,7 +224,7 @@
 			if(seenResource) {
 				Drop(dropedPhero = new Phero(CustomAgentType.PHERO, homePosition, seenResource.GetCurrentPoint()));
 			} else {
-				Drop(dropedPhero = new Phero(CustomAgentType.PHERO, homePosition, lastSeenResource));	
+				Drop(dropedPhero = new Phero(CustomAgentType.PHERO, homePosition, GetLastSeenResource()));	
 			}
 			lastDropedPhero = dropedPhero;
 		}
@@ -243,6 +243,11 @@
 		}
 		
 		public function GetLastSeenResource() : Point {
+			if(lastSeenResource) {
+				if (Point.distance(new Point(x, y), lastSeenResource) <= perceptionRadius && !seenResource) {
+					lastSeenResource = null;
+				}
+			}
 			return lastSeenResource;
 		}
 	}
