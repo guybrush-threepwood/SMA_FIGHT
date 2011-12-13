@@ -44,7 +44,6 @@
 		
 		public override function Update() : void {
 			super.Update();
-			CheckLastSeenResource();
 			seenPhero = null;
 		}
 		
@@ -52,7 +51,7 @@
 			expertSystem = new ExpertSystem();
 			
 			expertSystem.AddRule(new Rule(AgentFacts.GO_TO_RESOURCE, 	new Array(	AgentFacts.NO_RESOURCE,
-																					AgentFacts.SEE_RESOURCE)));
+																					CustomBotFacts.SEEN_RESOURCE)));
 			
 			expertSystem.AddRule(new Rule(AgentFacts.GO_TO_RESOURCE, 	new Array(	AgentFacts.NO_RESOURCE,
 																					AgentFacts.SEE_RESOURCE,
@@ -62,7 +61,7 @@
 																					
 			expertSystem.AddRule(new Rule(AgentFacts.TAKE_RESOURCE, 	new Array(	AgentFacts.NO_RESOURCE,
 																					AgentFacts.REACHED_RESOURCE)));
-
+																					
 			expertSystem.AddRule(new Rule(AgentFacts.GO_HOME, 			new Array(	AgentFacts.GOT_RESOURCE,
 																					AgentFacts.SEEING_HOME)));
 																					
@@ -89,15 +88,15 @@
 			}
 			
 			if(GetLastSeenResource()) {
+				expertSystem.SetFactValue(CustomBotFacts.SEEN_RESOURCE, true);
+			}
+				
+			if (seenResource) {
 				expertSystem.SetFactValue(AgentFacts.SEE_RESOURCE, true);
-				if(seenResource) {
-					if (Point.distance(new Point(direction.x, direction.y), new Point(x, y)) > 
-						Point.distance(new Point(seenResource.x, seenResource.y), new Point(x, y))) {
-							expertSystem.SetFactValue(CustomBotFacts.CLOSER_RESOURCE, true);
-						}
+				if (Point.distance(new Point(direction.x, direction.y), new Point(x, y)) > 
+					Point.distance(new Point(seenResource.x, seenResource.y), new Point(x, y))) {
+					expertSystem.SetFactValue(CustomBotFacts.CLOSER_RESOURCE, true);
 				}
-			} else if (!seenResource) {
-				expertSystem.SetFactValue(AgentFacts.NOTHING_SEEN, true);
 			}
 			
 			if (reachedResource) {
@@ -106,8 +105,6 @@
 			
 			if(homePosition) {
 				expertSystem.SetFactValue(AgentFacts.SEEING_HOME, true);
-			} else {
-				expertSystem.SetFactValue(AgentFacts.NOT_SEEING_HOME, true);
 			}
 			
 			if (IsAtHome()) {
@@ -120,41 +117,14 @@
 		}
 		
 		protected override function Act() : void {
-			var inferedFacts:Array = expertSystem.GetInferedFacts();
-			
-			for (var i:int = 0; i < inferedFacts.length; i++)
-			{
-				var fact:Fact = (inferedFacts[i] as Fact);
-				
-				switch(fact)
-				{
+			for (var i:int = 0; i < expertSystem.GetInferedFacts().length; i++) {
+				switch(expertSystem.GetInferedFacts()[i] as Fact) {	
 					case CustomBotFacts.DROP_PHERO:
 					DropPhero();
 					break;
-					
-					case AgentFacts.CHANGE_DIRECTION:
-					ChangeDirection();
-					break;
-					
-					case AgentFacts.GO_TO_RESOURCE:
-					GoToResource();
-					break;
-					
-					case AgentFacts.GO_HOME:
-					GoHome();
-					break;
-					
-					case AgentFacts.TAKE_RESOURCE:
-					TakeResource();
-					break;
-					
-					case AgentFacts.PUT_DOWN_RESOURCE:
-					PutDownResource();
-					break;
-					
 				}
 			}
-			expertSystem.ResetFacts();
+			super.Act();
 		}
 		
 		public override function onAgentCollide(_event:AgentCollideEvent) : void  {
@@ -174,13 +144,12 @@
 			}
 			
 			if ((collidedAgent as Phero != null)) {
-				seenPhero = (collidedAgent as Phero);
-				GetPheroInfos(collidedAgent as Phero);
+				seenPhero = GetPheroInfos(collidedAgent as Phero);
 			}
 			
 		}
 		
-		public function Chat(seenBot:AntubisBot) : void {
+		protected function Chat(seenBot:AntubisBot) : void {
 			if (lastSeenResource == null) {
 				lastSeenResource = seenBot.GetLastSeenResource();
 			}
@@ -189,7 +158,7 @@
 			}
 		}
 		
-		public function GetPheroInfos(phero:Phero) : void {
+		protected function GetPheroInfos(phero:Phero) : Phero {
 			if (phero != lastDropedPhero || lastDropedPhero == null) {
 				if (homePosition == null) {
 					homePosition = phero.GetHomePosition();
@@ -199,6 +168,7 @@
 					CheckLastSeenResource();
 				}
 			}
+			return phero;
 		}
 		
 		public override function GoToResource() : void {
@@ -210,9 +180,12 @@
 			lastReachedResource = null;
 		}
 		
-		public function DropPhero() : void {
+		protected function DropPhero() : void {
 			var dropedPhero:Phero;
 			
+			if (World.BOT_START_FROM_HOME && (IsAtHome() || (home && !IsPercieved(home)))) {
+				return;
+			}
 			if(homePosition || GetLastSeenResource || seenResource) {
 				if(seenResource) {
 					Drop(dropedPhero = new Phero(CustomAgentType.PHERO, homePosition, seenResource.GetCurrentPoint()));
@@ -231,7 +204,7 @@
 			}
 		}
 		
-		public function IsNearEdges() : Boolean {
+		protected function IsNearEdges() : Boolean {
 			return (x <= EDGE_LIMIT || x >= World.WORLD_WIDTH - EDGE_LIMIT ||
 					y <= EDGE_LIMIT || y >= World.WORLD_HEIGHT - EDGE_LIMIT);
 		}
