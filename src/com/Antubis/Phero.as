@@ -19,7 +19,7 @@ package com.Antubis
 		protected var resourcePosition:Point;
 		protected var lifetime:Number;
 		protected var phero_type:String;
-		public static const MAX_LIFETIME:Number = 200;
+		public static const MAX_LIFETIME:Number = 150;
 		
 		public function Phero(_type:AgentType, _home:Point, _resource:Point) 
 		{

@@ -72,7 +72,7 @@
 		}
 		
 		protected override function UpdateFacts() : void {
-			if (!seenPhero || seenPhero != null && seenPhero.GetPheroType() == "Resource" && homePosition) {
+			if (!seenPhero || seenPhero && seenPhero.GetPheroType() == "Resource" && homePosition) {
 				expertSystem.SetFactValue(CustomBotFacts.NO_PHERO_SEEN, true);
 			}
 			
@@ -131,11 +131,11 @@
 			var collidedAgent:Agent = _event.GetAgent();
 			super.onAgentCollide(_event);
 			
-			if(seenResource != null) {
+			if(seenResource) {
 				lastSeenResource = seenResource.GetCurrentPoint();
 			}
 			
-			if ((collidedAgent as Bot) != null) {
+			if (collidedAgent as Bot) {
 				if ((collidedAgent  as Bot).GetTeamId() == teamId) {
 					Chat(collidedAgent as AntubisBot);
 				} else if ((collidedAgent as Bot).HasResource() && !hasResource) {
@@ -143,27 +143,27 @@
 				}
 			}
 			
-			if ((collidedAgent as Phero != null)) {
+			if (collidedAgent as Phero) {
 				seenPhero = GetPheroInfos(collidedAgent as Phero);
 			}
 			
 		}
 		
 		protected function Chat(seenBot:AntubisBot) : void {
-			if (lastSeenResource == null) {
+			if (!lastSeenResource) {
 				lastSeenResource = seenBot.GetLastSeenResource();
 			}
-			if (homePosition == null) {
+			if (!homePosition) {
 				homePosition = seenBot.GetHomePosition();
 			}
 		}
 		
 		protected function GetPheroInfos(phero:Phero) : Phero {
-			if (phero != lastDropedPhero || lastDropedPhero == null) {
-				if (homePosition == null) {
+			if (phero != lastDropedPhero || !lastDropedPhero) {
+				if (!homePosition) {
 					homePosition = phero.GetHomePosition();
 				}
-				if (lastSeenResource == null) {
+				if (!lastSeenResource) {
 					lastSeenResource = phero.GetResourcePos();
 					CheckLastSeenResource();
 				}
@@ -183,9 +183,6 @@
 		protected function DropPhero() : void {
 			var dropedPhero:Phero;
 			
-			if (World.BOT_START_FROM_HOME && (IsAtHome() || (home && !IsPercieved(home)))) {
-				return;
-			}
 			if(homePosition && !World.BOT_START_FROM_HOME || GetLastSeenResource || seenResource) {
 				if(seenResource) {
 					Drop(dropedPhero = new Phero(CustomAgentType.PHERO, homePosition, seenResource.GetCurrentPoint()));
@@ -197,7 +194,7 @@
 		}
 		
 		protected function IsAtHome() : Boolean {
-			if (home != null) {
+			if (home) {
 				return (IsCollided(home));
 			} else {
 				return false;
