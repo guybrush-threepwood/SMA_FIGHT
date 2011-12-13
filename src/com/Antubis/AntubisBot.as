@@ -186,7 +186,7 @@
 			if (World.BOT_START_FROM_HOME && (IsAtHome() || (home && !IsPercieved(home)))) {
 				return;
 			}
-			if(homePosition || GetLastSeenResource || seenResource) {
+			if(homePosition && !World.BOT_START_FROM_HOME || GetLastSeenResource || seenResource) {
 				if(seenResource) {
 					Drop(dropedPhero = new Phero(CustomAgentType.PHERO, homePosition, seenResource.GetCurrentPoint()));
 				} else {
