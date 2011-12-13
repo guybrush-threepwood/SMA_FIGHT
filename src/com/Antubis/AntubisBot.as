@@ -76,7 +76,7 @@
 		}
 		
 		protected override function UpdateFacts() : void {
-			if (!seenPhero || seenPhero && seenPhero.GetPheroType() == "Resource" && homePosition) {
+			if (!seenPhero || seenPhero !=null && seenPhero.GetPheroType() == "Resource" && homePosition) {
 				expertSystem.SetFactValue(CustomBotFacts.NO_PHERO_SEEN, true);
 			}
 			
