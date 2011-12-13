@@ -57,6 +57,10 @@
 																					AgentFacts.SEE_RESOURCE,
 																					CustomBotFacts.CLOSER_RESOURCE)));
 																					
+			expertSystem.AddRule(new Rule(AgentFacts.GO_TO_RESOURCE, 	new Array(	AgentFacts.NO_RESOURCE,
+																					AgentFacts.SEE_RESOURCE,
+																					AgentFacts.BIGGER_RESOURCE)));
+																					
 			expertSystem.AddRule(new Rule(CustomBotFacts.DROP_PHERO,	new Array(	CustomBotFacts.NO_PHERO_SEEN)));
 																					
 			expertSystem.AddRule(new Rule(AgentFacts.TAKE_RESOURCE, 	new Array(	AgentFacts.NO_RESOURCE,
@@ -96,6 +100,8 @@
 				if (Point.distance(new Point(direction.x, direction.y), new Point(x, y)) > 
 					Point.distance(new Point(seenResource.x, seenResource.y), new Point(x, y))) {
 					expertSystem.SetFactValue(CustomBotFacts.CLOSER_RESOURCE, true);
+				} else if (seenResource.GetLife() > takenResource.GetLife()) {
+					expertSystem.SetFactValue(AgentFacts.BIGGER_RESOURCE, true);							
 				}
 			}
 			
