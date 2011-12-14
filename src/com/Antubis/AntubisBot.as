@@ -151,6 +151,7 @@
 			
 			if (collidedAgent as Phero) {
 				seenPhero = GetPheroInfos(collidedAgent as Phero);
+				seenPhero.SetInfos(homePosition, GetLastSeenResource());
 			}
 			
 		}

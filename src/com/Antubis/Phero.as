@@ -47,6 +47,7 @@ package com.Antubis
 				dead = true;
 			}
 			DrawSprite();
+			Harakiri();
 		}
 		
 		public function	InitSprites() : void
@@ -77,6 +78,19 @@ package com.Antubis
 		
 		public function GetPheroType() : String {
 			return phero_type;
+		}
+		
+		public function SetInfos(_home:Point, _resource:Point) : void {
+			if(_home) {
+				homePosition = _home;
+			}
+			resourcePosition = _resource;
+		}
+		
+		private function Harakiri() : void {
+			if (GetResourcePos() == null) {
+				dead = true;
+			}
 		}
 		
 	}
