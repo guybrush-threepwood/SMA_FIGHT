@@ -37,6 +37,8 @@
 		private var lastSeenResource:Point;
 		private var lastDropedPhero:Phero;
 		private var seenPhero:Phero;
+		private var chatted:Boolean;
+		private var got_phero_infos:Boolean;
 		
 		public override function AntubisBot(_type:AgentType) {
 			super(_type);
@@ -44,6 +46,8 @@
 		
 		public override function Update() : void {
 			super.Update();
+			chatted = false;
+			got_phero_infos = false;
 			seenPhero = null;
 		}
 		
@@ -143,15 +147,22 @@
 			
 			if (collidedAgent as Bot) {
 				if ((collidedAgent  as Bot).GetTeamId() == teamId) {
-					Chat(collidedAgent as AntubisBot);
+					if(!chatted) {
+						Chat(collidedAgent as AntubisBot);
+						chatted = true;
+					}
 				} else if ((collidedAgent as Bot).HasResource() && !hasResource) {
 					StealResource(collidedAgent as Bot);
 				}
 			}
 			
 			if (collidedAgent as Phero) {
-				seenPhero = GetPheroInfos(collidedAgent as Phero);
-				seenPhero.SetInfos(homePosition, GetLastSeenResource());
+				seenPhero = (collidedAgent as Phero);
+				if(!got_phero_infos) {
+					GetPheroInfos(seenPhero);
+					seenPhero.SetInfos(homePosition, GetLastSeenResource());
+					got_phero_infos = true;
+				}
 			}
 			
 		}
@@ -165,7 +176,7 @@
 			}
 		}
 		
-		protected function GetPheroInfos(phero:Phero) : Phero {
+		protected function GetPheroInfos(phero:Phero) : void {
 			if (phero != lastDropedPhero || !lastDropedPhero) {
 				if (!homePosition) {
 					homePosition = phero.GetHomePosition();
@@ -175,7 +186,6 @@
 					CheckLastSeenResource();
 				}
 			}
-			return phero;
 		}
 		
 		public override function GoToResource() : void {
