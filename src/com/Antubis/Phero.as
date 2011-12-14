@@ -1,7 +1,9 @@
 package com.Antubis 
 {
 	import com.novabox.MASwithTwoNests.Agent;
+	import com.novabox.MASwithTwoNests.AgentCollideEvent;
 	import com.novabox.MASwithTwoNests.AgentType;
+	import com.novabox.MASwithTwoNests.Resource;
 	import com.novabox.MASwithTwoNests.World;
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -24,6 +26,7 @@ package com.Antubis
 		public function Phero(_type:AgentType, _home:Point, _resource:Point) 
 		{
 			super(_type);
+			addEventListener(AgentCollideEvent.AGENT_COLLIDE, onAgentCollide);
 			homePosition = _home;
 			resourcePosition = _resource;
 			color = 0X6F2020;
@@ -48,6 +51,19 @@ package com.Antubis
 			}
 			DrawSprite();
 			Harakiri();
+		}
+		
+		private function IsCollided(_agent:Agent) : Boolean
+		{
+			return sprite.hitTestObject(_agent);
+		}
+		
+		public function onAgentCollide(_event:AgentCollideEvent) : void  {
+			var collidedAgent:Agent = _event.GetAgent();
+			
+			if (IsCollided(collidedAgent) && collidedAgent as Resource) {
+				SetInfos(homePosition, (collidedAgent as Resource).GetCurrentPoint());
+			}
 		}
 		
 		public function	InitSprites() : void
