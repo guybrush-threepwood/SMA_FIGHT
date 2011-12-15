@@ -204,8 +204,8 @@
 		protected function DropPhero() : void {
 			var dropedPhero:Phero;
 			
-			if(homePosition && !World.BOT_START_FROM_HOME && seenResource) {
-				Drop(dropedPhero = new Phero(CustomAgentType.PHERO, homePosition, seenResource.GetCurrentPoint()));
+			if(homePosition && !World.BOT_START_FROM_HOME || seenResource) {
+				Drop(dropedPhero = new Phero(CustomAgentType.PHERO, homePosition, seenResource.GetTargetPoint()));
 			}
 			lastDropedPhero = dropedPhero;
 		}
