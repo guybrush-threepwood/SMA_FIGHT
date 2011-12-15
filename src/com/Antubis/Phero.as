@@ -11,7 +11,6 @@ package com.Antubis
 	 */
 	public class Phero extends Agent 
 	{
-		protected var sprite:Sprite;
 		protected var color:int;
 		protected var homePosition:Point;
 		protected var resourcePosition:Point;
@@ -50,20 +49,19 @@ package com.Antubis
 		
 		public function	InitSprites() : void
 		{
-			this.graphics.beginFill(0XAAAAAA, 0);
-			this.graphics.endFill();
+			graphics.beginFill(0XAAAAAA, 0);
+			graphics.endFill();
 			
-			sprite = new Sprite();
-			addChild(sprite);
+			//Main.world.AddAgent(this);
 		}
 		
 		protected function DrawSprite() : void
 		{	
 			
-			sprite.graphics.clear();
-			sprite.graphics.beginFill(color, lifetime/MAX_LIFETIME);
-			sprite.graphics.drawCircle(0, 0, 2);
-			sprite.graphics.endFill();
+			graphics.clear();
+			graphics.beginFill(color, lifetime/MAX_LIFETIME);
+			graphics.drawCircle(0, 0, 2);
+			graphics.endFill();
 		}
 		
 		public function GetResourcePos() : Point {
