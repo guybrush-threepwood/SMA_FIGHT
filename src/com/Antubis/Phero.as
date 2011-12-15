@@ -25,12 +25,13 @@ package com.Antubis
 			resourcePosition = _resource;
 			color = 0X6F2020;
 			lifetime = MAX_LIFETIME;
-			InitSprites();
+			graphics.beginFill(0XAAAAAA, 0);
+			graphics.endFill();
 			if (resourcePosition) {
-				phero_type = "Resource"
+				phero_type = "Resource";
 			}
 			if (homePosition) {
-				phero_type = "Home"
+				phero_type = "Home";
 			}
 		}
 		
@@ -39,16 +40,6 @@ package com.Antubis
 			if (lifetime == 0) {
 				dead = true;
 			}
-			DrawSprite();
-			Harakiri();
-		}
-		
-		public function	InitSprites() : void {
-			graphics.beginFill(0XAAAAAA, 0);
-			graphics.endFill();
-		}
-		
-		protected function DrawSprite() : void {
 			graphics.clear();
 			graphics.beginFill(color, lifetime/MAX_LIFETIME);
 			graphics.drawCircle(0, 0, 2);
@@ -65,19 +56,6 @@ package com.Antubis
 		
 		public function GetPheroType() : String {
 			return phero_type;
-		}
-		
-		public function SetInfos(_home:Point, _resource:Point) : void {
-			if(_home) {
-				homePosition = _home;
-			}
-			resourcePosition = _resource;
-		}
-		
-		private function Harakiri() : void {
-			if (GetResourcePos() == null) {
-				dead = true;
-			}
 		}
 		
 	}
