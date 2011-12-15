@@ -105,7 +105,7 @@
 				if (Point.distance(new Point(direction.x, direction.y), new Point(x, y)) > 
 					Point.distance(new Point(seenResource.x, seenResource.y), new Point(x, y))) {
 					expertSystem.SetFactValue(CustomBotFacts.CLOSER_RESOURCE, true);
-				} else if (seenResource.GetLife() > takenResource.GetLife()) {
+				} else if (takenResource && seenResource.GetLife() > takenResource.GetLife()) {
 					expertSystem.SetFactValue(AgentFacts.BIGGER_RESOURCE, true);							
 				}
 			}
