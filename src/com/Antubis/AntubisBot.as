@@ -38,7 +38,6 @@
 		private var lastDropedPhero:Phero;
 		private var seenPhero:Phero;
 		private var chatted:Boolean;
-		private var got_phero_infos:Boolean;
 		
 		public override function AntubisBot(_type:AgentType) {
 			super(_type);
@@ -47,7 +46,6 @@
 		public override function Update() : void {
 			super.Update();
 			chatted = false;
-			got_phero_infos = false;
 			seenPhero = null;
 		}
 		
@@ -158,10 +156,10 @@
 			
 			if (collidedAgent as Phero) {
 				seenPhero = (collidedAgent as Phero);
-				if(!got_phero_infos) {
+				if(!chatted) {
 					GetPheroInfos(seenPhero);
 					seenPhero.SetInfos(homePosition, GetLastSeenResource());
-					got_phero_infos = true;
+					chatted = true;
 				}
 			}
 			
