@@ -93,7 +93,7 @@
 				expertSystem.SetFactValue(AgentFacts.NO_RESOURCE, true);
 			}
 			
-			if(GetLastSeenResource()) {
+			if(GetLastSeenResource() != null ) {
 				expertSystem.SetFactValue(CustomBotFacts.SEEN_RESOURCE, true);
 			}
 				
