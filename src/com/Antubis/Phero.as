@@ -47,17 +47,12 @@ package com.Antubis
 			Harakiri();
 		}
 		
-		public function	InitSprites() : void
-		{
+		public function	InitSprites() : void {
 			graphics.beginFill(0XAAAAAA, 0);
 			graphics.endFill();
-			
-			//Main.world.AddAgent(this);
 		}
 		
-		protected function DrawSprite() : void
-		{	
-			
+		protected function DrawSprite() : void {
 			graphics.clear();
 			graphics.beginFill(color, lifetime/MAX_LIFETIME);
 			graphics.drawCircle(0, 0, 2);
