@@ -8,6 +8,7 @@
 	import com.novabox.MASwithTwoNests.AgentFacts;
 	import com.novabox.MASwithTwoNests.TimeManager;
 	import com.novabox.MASwithTwoNests.Agent;
+	import com.novabox.MASwithTwoNests.Main;
 	import com.novabox.MASwithTwoNests.World;
 	import com.novabox.MASwithTwoNests.Resource;
 	import com.novabox.expertSystem.Fact;
@@ -78,7 +79,9 @@
 		}
 		
 		protected override function UpdateFacts() : void {
-			if (!seenPhero || seenPhero !=null && seenPhero.GetPheroType() == "Resource" && homePosition) {
+			if (!seenPhero  ||
+				seenPhero && Point.distance(new Point(seenPhero.x, seenPhero.y), new Point(x, y)) == perceptionRadius ||
+				seenPhero && seenPhero.GetPheroType() == "Resource" && homePosition) {
 				expertSystem.SetFactValue(CustomBotFacts.NO_PHERO_SEEN, true);
 			}
 			
@@ -93,7 +96,7 @@
 				expertSystem.SetFactValue(AgentFacts.NO_RESOURCE, true);
 			}
 			
-			if(GetLastSeenResource() != null ) {
+			if(GetLastSeenResource()) {
 				expertSystem.SetFactValue(CustomBotFacts.SEEN_RESOURCE, true);
 			}
 				
@@ -139,8 +142,12 @@
 			var collidedAgent:Agent = _event.GetAgent();
 			super.onAgentCollide(_event);
 			
-			if(seenResource) {
-				lastSeenResource = seenResource.GetCurrentPoint();
+			if (seenResource) {
+				if(Main.world.IsOut(seenResource.GetTargetPoint())) {
+					lastSeenResource = seenResource.GetCurrentPoint();
+				} else {
+					lastSeenResource = seenResource.GetTargetPoint();
+				}
 			}
 			
 			if (collidedAgent as Bot) {
@@ -158,7 +165,6 @@
 				seenPhero = (collidedAgent as Phero);
 				if(!chatted) {
 					GetPheroInfos(seenPhero);
-					seenPhero.SetInfos(homePosition, GetLastSeenResource());
 					chatted = true;
 				}
 			}
