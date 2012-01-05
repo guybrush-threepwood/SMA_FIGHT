@@ -35,7 +35,7 @@
 	public class AntubisBot extends Bot {
 		
 		private static const EDGE_LIMIT:Number 			= 6;
-		public static const MAX_LIVING_PHEROS:Number 	= World.BOT_COUNT / 2;
+		public static const MAX_LIVING_PHEROS:Number 	= 40; //Ideally, the number of bots in the team * 2
 		public static var livingPheros:Number 			= 0;
 		public  var lastSeenResource:Point;
 		private var lastDropedPhero:Phero;
@@ -227,7 +227,7 @@
 		
 		protected function CorrectLastSeenResource() : void {
 			if(lastSeenResource) {
-				if (Point.distance(new Point(lastSeenResource.x, lastSeenResource.y), new Point(x, y)) <= perceptionRadius) {
+				if (Point.distance(new Point(lastSeenResource.x, lastSeenResource.y), new Point(x, y)) <= perceptionRadius && !seenResource) {
 					lastSeenResource = null;
 				}
 			}
