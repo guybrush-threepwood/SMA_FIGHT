@@ -1,8 +1,10 @@
 package com.Antubis 
 {
 	import com.novabox.MASwithTwoNests.Agent;
+	import com.Antubis.AntubisBot;
 	import com.novabox.MASwithTwoNests.AgentType;
 	import com.novabox.MASwithTwoNests.Resource;
+	import com.novabox.MASwithTwoNests.TimeManager;
 	import flash.geom.Point;
 	
 	/**
@@ -12,32 +14,25 @@ package com.Antubis
 	public class Phero extends Agent 
 	{
 		protected var color:int;
-		protected var homePosition:Point;
-		protected var resourcePosition:Point;
 		protected var lifetime:Number;
-		protected var phero_type:String;
-		public static const MAX_LIFETIME:Number = 300;
+		public static const MAX_LIFETIME:Number = 9000;
 		
-		public function Phero(_type:AgentType, _home:Point, _resource:Point) 
-		{
+		public function Phero(_type:AgentType) {
 			super(_type);
-			homePosition = _home;
-			resourcePosition = _resource;
+			AntubisBot.livingPheros++;
+			if (AntubisBot.livingPheros > AntubisBot.MAX_LIVING_PHEROS) {
+				dead = true;
+			}
 			color = 0X6F2020;
 			lifetime = MAX_LIFETIME;
 			graphics.beginFill(0XAAAAAA, 0);
 			graphics.endFill();
-			if (resourcePosition) {
-				phero_type = "Resource";
-			}
-			if (homePosition) {
-				phero_type = "Home";
-			}
 		}
 		
 		public override function Update() : void {
-			lifetime--;
-			if (lifetime == 0) {
+			lifetime += TimeManager.timeManager.GetFrameDeltaTime();
+			if (lifetime <= 0) {
+				AntubisBot.livingPheros--;
 				dead = true;
 			}
 			graphics.clear();
@@ -45,19 +40,6 @@ package com.Antubis
 			graphics.drawCircle(0, 0, 2);
 			graphics.endFill();
 		}
-		
-		public function GetResourcePos() : Point {
-			return resourcePosition;
-		}
-		
-		public function GetHomePosition() : Point {
-			return homePosition;
-		}
-		
-		public function GetPheroType() : String {
-			return phero_type;
-		}
-		
 	}
 
 }
