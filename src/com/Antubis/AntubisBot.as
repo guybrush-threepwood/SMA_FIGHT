@@ -35,7 +35,7 @@
 	public class AntubisBot extends Bot {
 		
 		private static const EDGE_LIMIT:Number 			= 6;
-		public static const MAX_LIVING_PHEROS:Number 	= 40; //Ideally, the number of bots in the team * 2
+		public static const MAX_LIVING_PHEROS:Number 	= 80; //Ideally, the number of bots in the team * 2
 		public static var livingPheros:Number 			= 0;
 		public  var lastSeenResource:Point;
 		private var lastDropedPhero:Phero;
@@ -65,7 +65,9 @@
 																					AgentFacts.SEE_RESOURCE,
 																					AgentFacts.BIGGER_RESOURCE)));
 																					
-			expertSystem.AddRule(new Rule(CustomBotFacts.GO_TO_PHERO,	new Array( CustomBotFacts.SEEN_PHERO)));
+			expertSystem.AddRule(new Rule(CustomBotFacts.GO_TO_PHERO,	new Array( 	CustomBotFacts.SEEN_PHERO,
+																					AgentFacts.NO_RESOURCE,
+																					AgentFacts.NOTHING_SEEN)));
 																					
 			expertSystem.AddRule(new Rule(CustomBotFacts.DROP_PHERO,	new Array(	CustomBotFacts.NO_PHERO_SEEN,
 																					CustomBotFacts.DROP_ALLOWED,
@@ -155,7 +157,7 @@
 			super.onAgentCollide(_event);
 			
 			if (collidedAgent as Resource) {
-				lastSeenResource = GetCurrentOrTargetPoint(seenResource);
+				lastSeenResource = GetCurrentOrTargetPoint(collidedAgent as Resource);
 			}
 			
 			if (collidedAgent as Phero) {
