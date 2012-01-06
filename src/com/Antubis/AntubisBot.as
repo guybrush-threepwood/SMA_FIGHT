@@ -38,6 +38,7 @@
 		public static const MAX_LIVING_PHEROS:Number 	= 80; //Ideally, the number of bots in the team * 2
 		public static var livingPheros:Number 			= 0;
 		public  var lastSeenResource:Point;
+		private var lastSeenPhero:Phero;
 		private var lastDropedPhero:Phero;
 		private var seenPhero:Phero;
 		
@@ -49,6 +50,7 @@
 			CorrectLastSeenResource();
 			super.Update();
 			seenPhero = null;
+			lastDropedPhero = null;
 		}
 		
 		protected override function InitExpertSystem() : void {
@@ -67,7 +69,7 @@
 																					
 			expertSystem.AddRule(new Rule(CustomBotFacts.GO_TO_PHERO,	new Array( 	CustomBotFacts.SEEN_PHERO,
 																					AgentFacts.NO_RESOURCE,
-																					AgentFacts.NOTHING_SEEN)));
+																					CustomBotFacts.NO_RESOURCE_SEEN)));
 																					
 			expertSystem.AddRule(new Rule(CustomBotFacts.DROP_PHERO,	new Array(	CustomBotFacts.NO_PHERO_SEEN,
 																					CustomBotFacts.DROP_ALLOWED,
@@ -88,7 +90,7 @@
 		protected override function UpdateFacts() : void {
 			if (!seenPhero) {
 				expertSystem.SetFactValue(CustomBotFacts.NO_PHERO_SEEN, true);
-			} else if (seenPhero != lastDropedPhero) {
+			} else if (seenPhero != lastDropedPhero && seenPhero != lastSeenPhero) {
 				expertSystem.SetFactValue(CustomBotFacts.SEEN_PHERO, true);
 			}
 			
@@ -109,6 +111,8 @@
 			
 			if (lastSeenResource) {
 				expertSystem.SetFactValue(CustomBotFacts.SEEN_RESOURCE, true);
+			} else {
+				expertSystem.SetFactValue(CustomBotFacts.NO_RESOURCE_SEEN, true);
 			}
 				
 			if (seenResource) {
@@ -139,8 +143,7 @@
 		}
 		
 		public override function GoToResource() : void {
-			direction = lastSeenResource.subtract(targetPoint);
-			direction.normalize(1);
+			GoToPoint(lastSeenResource);
 			lastSeenResource = null;
 			seenResource = null;
 			takenResource = null;
@@ -148,8 +151,9 @@
 		}
 		
 		public function GoToPhero() : void {
-			direction = seenPhero.GetCurrentPoint().subtract(targetPoint);
+			GoToPoint(seenPhero.GetCurrentPoint());
 			seenPhero = null;
+			lastSeenPhero = null;
 		}
 		
 		public override function onAgentCollide(_event:AgentCollideEvent) : void  {
@@ -162,6 +166,7 @@
 			
 			if (collidedAgent as Phero) {
 				seenPhero = (collidedAgent as Phero);
+				lastSeenPhero = seenPhero;
 			}
 			
 			if (collidedAgent as Bot) {
@@ -201,6 +206,11 @@
 			Drop(lastDropedPhero = new Phero(CustomAgentType.PHERO));
 		}
 		
+		protected function GoToPoint(_direction:Point) : void {
+			direction = _direction.subtract(targetPoint);
+			direction.normalize(1);
+		}
+		
 		protected function IsAtHome() : Boolean {
 			if (home) {
 				return (IsCollided(home));
@@ -233,6 +243,6 @@
 					lastSeenResource = null;
 				}
 			}
-		}
+		}		
 	}
 }
