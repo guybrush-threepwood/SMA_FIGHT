@@ -15,7 +15,7 @@ package com.Antubis
 	{
 		protected var color:int;
 		protected var lifetime:Number;
-		public static const MAX_LIFETIME:Number = 9000;
+		public static const MAX_LIFETIME:Number = 3000;
 		
 		public function Phero(_type:AgentType) {
 			super(_type);
@@ -30,7 +30,7 @@ package com.Antubis
 		}
 		
 		public override function Update() : void {
-			lifetime += TimeManager.timeManager.GetFrameDeltaTime();
+			lifetime -= TimeManager.timeManager.GetFrameDeltaTime();
 			if (lifetime <= 0) {
 				AntubisBot.livingPheros--;
 				dead = true;

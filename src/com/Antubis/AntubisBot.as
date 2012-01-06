@@ -36,13 +36,14 @@
 		
 		private static const EDGE_LIMIT:Number 			= 6;
 		public static const MAX_LIVING_PHEROS:Number 	= 80; //Ideally, the number of bots in the team * 2
-		public static var livingPheros:Number 			= 0;
+		public static var livingPheros:Number;
 		public  var lastSeenResource:Point;
 		private var lastSeenPhero:Phero;
 		private var lastDropedPhero:Phero;
 		private var seenPhero:Phero;
 		
 		public override function AntubisBot(_type:AgentType) {
+			livingPheros = 0;
 			super(_type);
 		}
 		
@@ -68,8 +69,7 @@
 																					AgentFacts.BIGGER_RESOURCE)));
 																					
 			expertSystem.AddRule(new Rule(CustomBotFacts.GO_TO_PHERO,	new Array( 	CustomBotFacts.SEEN_PHERO,
-																					AgentFacts.NO_RESOURCE,
-																					CustomBotFacts.NO_RESOURCE_SEEN)));
+																					AgentFacts.NO_RESOURCE)));
 																					
 			expertSystem.AddRule(new Rule(CustomBotFacts.DROP_PHERO,	new Array(	CustomBotFacts.NO_PHERO_SEEN,
 																					CustomBotFacts.DROP_ALLOWED,
