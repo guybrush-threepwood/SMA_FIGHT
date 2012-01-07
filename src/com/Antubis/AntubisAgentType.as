@@ -15,11 +15,11 @@
 	//*****************************************************************
 	 
 	public class AntubisAgentType {
-		public static const ANTUBIS_BOT:AgentType = new AgentType(	AntubisBot,	// Bot Class
-																	1			// Bot ratio in team
+		public static const ANTUBIS_BOT:AgentType = new AgentType(	AntubisBot,
+																	0.625
 																	);
 		public static const PHERO:AgentType = new AgentType(		Phero,
-																	1
+																	0
 																	);
 	}
 

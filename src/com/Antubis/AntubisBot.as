@@ -1,5 +1,6 @@
 ﻿package com.Antubis 
 {
+	import com.novabox.MASwithTwoNests.World;
 	import com.novabox.MASwithTwoNests.AgentCollideEvent;
 	import com.novabox.MASwithTwoNests.AgentType;
 	import com.novabox.MASwithTwoNests.Bot;
@@ -78,7 +79,7 @@
 		}
 		
 		protected override function UpdateFacts() : void {
-			if (seenPhero != lastDropedPhero && seenPhero != lastSeenPhero) {
+			if (seenPhero != lastSeenPhero) {
 				expertSystem.SetFactValue(CustomBotFacts.SEEN_PHERO, true);
 			}
 			
@@ -131,7 +132,7 @@
 			super.onAgentCollide(_event);
 			
 			if (collidedAgent as Resource) {
-				lastSeenResource = GetCurrentOrTargetPoint(collidedAgent as Resource);
+				lastSeenResource = (collidedAgent as Resource).GetCurrentPoint();
 			}
 			
 			if (collidedAgent as Phero) {

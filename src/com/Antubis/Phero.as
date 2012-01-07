@@ -19,10 +19,10 @@ package com.Antubis
 		
 		public function Phero(_type:AgentType) {
 			super(_type);
-			AntubisBot.livingPheros++;
+			/*AntubisBot.livingPheros++;
 			if (AntubisBot.livingPheros > AntubisBot.MAX_LIVING_PHEROS) {
 				dead = true;
-			}
+			}*/
 			color = 0X6F2020;
 			lifetime = MAX_LIFETIME;
 			graphics.beginFill(0XAAAAAA, 0);
@@ -32,7 +32,7 @@ package com.Antubis
 		public override function Update() : void {
 			lifetime -= TimeManager.timeManager.GetFrameDeltaTime();
 			if (lifetime <= 0) {
-				AntubisBot.livingPheros--;
+				//AntubisBot.livingPheros--;
 				dead = true;
 			}
 			graphics.clear();
