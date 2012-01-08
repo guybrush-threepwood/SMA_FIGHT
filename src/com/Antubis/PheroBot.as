@@ -42,9 +42,6 @@ package com.Antubis
 			
 			expertSystem.AddRule(new Rule(AgentFacts.GO_TO_RESOURCE,	new Array( 	AgentFacts.SEE_RESOURCE,
 																					CustomBotFacts.NO_PHERO_BOT_ON_THIS_RESOURCE)));
-																					
-			expertSystem.AddRule(new Rule(AgentFacts.GO_TO_RESOURCE, 	new Array(	AgentFacts.REACHED_RESOURCE,
-																					CustomBotFacts.NO_PHERO_BOT_ON_THIS_RESOURCE)));
 			
 			expertSystem.AddRule(new Rule(CustomBotFacts.DROP_PHERO, 	new Array(	CustomBotFacts.LAST_DROPED_PHERO_IS_TOO_FAR,
 																					AgentFacts.GO_TO_RESOURCE)));
@@ -81,10 +78,6 @@ package com.Antubis
 					}
 				}
 			}
-			
-			if (reachedResource) {
-				expertSystem.SetFactValue(AgentFacts.REACHED_RESOURCE, true);
-			}
 		}
 		
 		public override function onAgentCollide(_event:AgentCollideEvent) : void  {
@@ -98,13 +91,16 @@ package com.Antubis
 			if (collidedAgent as Resource) {
 				seenResource = collidedAgent as Resource;
 				lastSeenResource = seenResource.GetCurrentPoint();
-				if (IsCollided(seenResource)) {
-					reachedResource = seenResource;
-				}
 			}
 			
 			if (collidedAgent as PheroBot) {
 				seenPheroBot = collidedAgent as PheroBot;
+			}
+			
+			if (collidedAgent as Bot) {
+				if ((collidedAgent  as Bot).GetTeamId() == teamId) {
+					Chat(collidedAgent as AntubisBot);
+				}
 			}
 			
 			if (collidedAgent.GetType() == AgentType.AGENT_BOT_HOME) {
