@@ -1,7 +1,7 @@
 package com.Antubis 
 {
 	import com.novabox.MASwithTwoNests.Agent;
-	import com.Antubis.AntubisBot;
+	import com.Antubis.PheroBot;
 	import com.novabox.MASwithTwoNests.AgentType;
 	import com.novabox.MASwithTwoNests.Resource;
 	import com.novabox.MASwithTwoNests.TimeManager;
@@ -15,16 +15,14 @@ package com.Antubis
 	{
 		protected var color:int;
 		protected var lifetime:Number;
-		public static const MAX_LIFETIME:Number = 3000;
+		protected var start_lifetime:Number;
+		public static const BASE_LIFETIME:Number = 3000;
 		
-		public function Phero(_type:AgentType) {
+		public function Phero(_type:AgentType, _lifetime:Number) {
 			super(_type);
-			/*AntubisBot.livingPheros++;
-			if (AntubisBot.livingPheros > AntubisBot.MAX_LIVING_PHEROS) {
-				dead = true;
-			}*/
 			color = 0X6F2020;
-			lifetime = MAX_LIFETIME;
+			lifetime = _lifetime;
+			start_lifetime = _lifetime;
 			graphics.beginFill(0XAAAAAA, 0);
 			graphics.endFill();
 		}
@@ -32,11 +30,10 @@ package com.Antubis
 		public override function Update() : void {
 			lifetime -= TimeManager.timeManager.GetFrameDeltaTime();
 			if (lifetime <= 0) {
-				//AntubisBot.livingPheros--;
 				dead = true;
 			}
 			graphics.clear();
-			graphics.beginFill(color, lifetime/MAX_LIFETIME);
+			graphics.beginFill(color, lifetime/start_lifetime);
 			graphics.drawCircle(0, 0, 2);
 			graphics.endFill();
 		}

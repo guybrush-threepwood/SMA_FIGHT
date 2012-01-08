@@ -16,23 +16,29 @@
 
 	public class CustomBotFacts {
 		
-		public static const SEEN_RESOURCE:Fact		= new Fact("Seen a resource.");
+		public static const SEE_NO_RESOURCE:Fact				= new Fact("No Resource is perceived.");
 		
-		public static const NO_RESOURCE_SEEN:Fact	= new Fact("No resource seen.");
+		public static const SEEN_RESOURCE:Fact					= new Fact("Seen a Resource.");
 		
-		public static const NEAR_EDGES:Fact			= new Fact("Near one of the world's edges");
+		public static const NO_RESOURCE_SEEN:Fact				= new Fact("No Resource seen.");
 		
-		public static const CLOSER_RESOURCE:Fact	= new Fact("Another resource is closer.");
+		public static const NEAR_EDGES:Fact						= new Fact("Near one of the World's edges");
 		
-		public static const SEEN_PHERO:Fact			= new Fact("Seen a phero.");
+		public static const CLOSER_RESOURCE:Fact				= new Fact("Another Resource is closer.");
 		
-		public static const NO_PHERO_SEEN:Fact		= new Fact("Can see no phero.");
+		public static const SEEN_PHERO:Fact						= new Fact("Seen a Phero.");
 		
-		public static const DROP_PHERO:Fact			= new Fact("Will drop a phero.");
+		public static const NO_PHERO_DROPED:Fact				= new Fact("No Phero droped.");
 		
-		public static const GO_TO_PHERO:Fact		= new Fact("Go to Phero action.");
+		public static const LAST_DROPED_PHERO_IS_TOO_FAR:Fact	= new Fact("Last droped Phero is at a quarter of the perceptionRadius.");
 		
-		public static const DROP_ALLOWED:Fact		= new Fact("Can drop a phero.");
+		public static const NO_PHERO_BOT_ON_THIS_RESOURCE:Fact	= new Fact("Didn't see another PheroBot on this Resource.");
+		
+		public static const DROP_PHERO:Fact						= new Fact("Drop Phero action.");
+		
+		public static const GO_TO_PHERO:Fact					= new Fact("Go to Phero action.");
+		
+		public static const FOLLOW_RESOURCE:Fact				= new Fact("Follow Resource action.");
 	}
 
 }

@@ -36,7 +36,6 @@
 		
 		private static const EDGE_LIMIT:Number = 6;
 		public  var lastSeenResource:Point;
-		private var lastSeenPhero:Phero;
 		private var seenPhero:Phero;
 		
 		public override function AntubisBot(_type:AgentType) {
@@ -64,7 +63,8 @@
 																					AgentFacts.BIGGER_RESOURCE)));
 																					
 			expertSystem.AddRule(new Rule(CustomBotFacts.GO_TO_PHERO,	new Array( 	CustomBotFacts.SEEN_PHERO,
-																					AgentFacts.NO_RESOURCE)));
+																					AgentFacts.NO_RESOURCE,
+																					CustomBotFacts.SEE_NO_RESOURCE)));
 																					
 			expertSystem.AddRule(new Rule(AgentFacts.TAKE_RESOURCE, 	new Array(	AgentFacts.NO_RESOURCE,
 																					AgentFacts.REACHED_RESOURCE)));
@@ -79,7 +79,7 @@
 		}
 		
 		protected override function UpdateFacts() : void {
-			if (seenPhero != lastSeenPhero) {
+			if (seenPhero) {
 				expertSystem.SetFactValue(CustomBotFacts.SEEN_PHERO, true);
 			}
 			
@@ -108,6 +108,8 @@
 				if (takenResource && seenResource.GetLife() > takenResource.GetLife()) {
 					expertSystem.SetFactValue(AgentFacts.BIGGER_RESOURCE, true);							
 				}
+			} else {
+				expertSystem.SetFactValue(CustomBotFacts.SEE_NO_RESOURCE, true);
 			}
 			
 			if (reachedResource) {
@@ -137,7 +139,6 @@
 			
 			if (collidedAgent as Phero) {
 				seenPhero = (collidedAgent as Phero);
-				lastSeenPhero = seenPhero;
 			}
 			
 			if (collidedAgent as Bot) {
@@ -149,18 +150,18 @@
 			}
 		}
 		
-		protected function Chat(seenBot:AntubisBot) : void {
+		protected function Chat(_seenBot:AntubisBot) : void {
 			if (!lastSeenResource) {
-				lastSeenResource = seenBot.lastSeenResource;
+				lastSeenResource = _seenBot.lastSeenResource;
 			}
 			if (!homePosition) {
-				homePosition = seenBot.GetHomePosition();
+				homePosition = _seenBot.GetHomePosition();
 			}
 		}
 		
 		protected override function Act() : void {
 			for (var i:int = 0; i < expertSystem.GetInferedFacts().length; i++) {
-				if((expertSystem.GetInferedFacts()[i] as Fact) == CustomBotFacts.GO_TO_PHERO) {
+				if ((expertSystem.GetInferedFacts()[i] as Fact) == CustomBotFacts.GO_TO_PHERO) {
 					GoToPhero();
 				}
 			}
@@ -168,8 +169,8 @@
 		}
 		
 		protected function CorrectLastSeenResource() : void {
-			if(lastSeenResource) {
-				if (Point.distance(new Point(lastSeenResource.x, lastSeenResource.y), new Point(x, y)) <= perceptionRadius && !seenResource) {
+			if (lastSeenResource) {
+				if (Point.distance(lastSeenResource as Point, new Point(x, y)) <= perceptionRadius && !seenResource) {
 					lastSeenResource = null;
 				}
 			}
@@ -189,9 +190,10 @@
 		}
 		
 		public function GoToPhero() : void {
-			GoToPoint(seenPhero.GetCurrentPoint());
-			seenPhero = null;
-			lastSeenPhero = null;
+			if (seenPhero) {
+				GoToPoint(seenPhero.GetCurrentPoint());
+				seenPhero = null;
+			}
 		}
 		
 		protected function IsAtHome() : Boolean {
@@ -209,7 +211,7 @@
 		
 		protected function IsCloser(_agent:Agent) : Boolean {
 			return (Point.distance(new Point(_agent.x, _agent.y), new Point(x, y)) > 
-					Point.distance(new Point(direction.x, direction.y), new Point(x, y)));
+					Point.distance(direction, new Point(x, y)));
 		}
 	}
 }
