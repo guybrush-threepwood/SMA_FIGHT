@@ -24,7 +24,6 @@ package com.Antubis
 		
 		public function PheroBot(_type:AgentType) {
 			super(_type);
-			color = 0x00FF00;
 			livingPheros = 0;
 		}
 		
