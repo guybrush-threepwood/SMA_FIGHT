@@ -37,6 +37,10 @@ package com.Antubis
 			
 			expertSystem.AddRule(new Rule(AgentFacts.GO_TO_RESOURCE,	new Array( 	AgentFacts.SEE_RESOURCE,
 																					CustomBotFacts.NO_PHERO_BOT_ON_THIS_RESOURCE)));
+																					
+			expertSystem.AddRule(new Rule(CustomBotFacts.GO_TO_ENEMY_BOT,new Array(	CustomBotFacts.SEEN_ENEMY_BOT,
+																					CustomBotFacts.NO_RESOURCE_SEEN,
+																					CustomBotFacts.SEE_NO_RESOURCE)));
 			
 			expertSystem.AddRule(new Rule(CustomBotFacts.DROP_PHERO, 	new Array(	CustomBotFacts.LAST_DROPED_PHERO_IS_TOO_FAR,
 																					AgentFacts.SEE_RESOURCE)));
@@ -75,34 +79,10 @@ package com.Antubis
 		
 		public override function onAgentCollide(_event:AgentCollideEvent) : void  {
 			var collidedAgent:Agent = _event.GetAgent();
-			
-			if (collidedAgent as Resource) {
-				seenResource = collidedAgent as Resource;
-				lastSeenResource = seenResource.GetCurrentPoint();
-				if (IsCollided(collidedAgent)) {
-					reachedResource = (collidedAgent as Resource);
-				}
-			}
+			super.onAgentCollide(_event);
 			
 			if (collidedAgent as PheroBot) {
 				seenPheroBot = collidedAgent as PheroBot;
-			}
-			
-			if (collidedAgent as Bot) {
-				if ((collidedAgent  as Bot).GetTeamId() == teamId) {
-					Chat(collidedAgent as AntubisBot);
-				}
-			}
-			
-			if (collidedAgent as Phero) {
-				seenPhero = collidedAgent as Phero;
-			}
-			
-			if (collidedAgent.GetType() == AgentType.AGENT_BOT_HOME) {
-				if ((collidedAgent as BotHome).GetTeamId() == teamId) {
-					home = collidedAgent as BotHome;
-					homePosition = new Point(home.GetTargetPoint().x, home.GetTargetPoint().y);
-				}
 			}
 		}
 		

@@ -16,10 +16,10 @@
 	 
 	public class AntubisAgentType {
 		public static const ANTUBIS_BOT:AgentType = new AgentType(	AntubisBot,
-																	0.625
+																	0.80
 																	);
 		public static const PHERO_BOT:AgentType = new AgentType( 	PheroBot,
-																	0.375
+																	0.20
 																	);
 		public static const PHERO:AgentType = new AgentType(		Phero,
 																	0

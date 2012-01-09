@@ -26,6 +26,10 @@
 		
 		public static const CLOSER_RESOURCE:Fact				= new Fact("Another Resource is closer.");
 		
+		public static const SEEN_ENEMY_BOT:Fact					= new Fact("Seen an enemy Bot.");
+		
+		public static const NO_TEAM_BOT_SEEN:Fact				= new Fact("Seen no team Bot.");
+		
 		public static const SEEN_PHERO:Fact						= new Fact("Seen a Phero.");
 		
 		public static const LAST_DROPED_PHERO_IS_TOO_FAR:Fact	= new Fact("Last droped Phero is at midway of the perceptionRadius.");
@@ -35,6 +39,8 @@
 		public static const DROP_PHERO:Fact						= new Fact("Drop Phero action.");
 		
 		public static const GO_TO_PHERO:Fact					= new Fact("Go to Phero action.");
+		
+		public static const GO_TO_ENEMY_BOT:Fact				= new Fact("Go to enemy bot action.");
 	}
 
 }

@@ -36,6 +36,8 @@
 		
 		protected static const EDGE_LIMIT:Number = 6;
 		protected var seenPhero:Phero;
+		protected var seenEnemyBot:Point;
+		protected var seenTeamBot:AntubisBot;
 		protected var lastSeenResource:Point;
 		
 		public override function AntubisBot(_type:AgentType) {
@@ -48,6 +50,8 @@
 			seenPhero = null;
 			seenResource = null;
 			lastSeenResource = null;
+			seenEnemyBot = null;
+			seenTeamBot = null;
 		}
 		
 		protected override function InitExpertSystem() : void {
@@ -67,6 +71,12 @@
 			expertSystem.AddRule(new Rule(CustomBotFacts.GO_TO_PHERO,	new Array( 	CustomBotFacts.SEEN_PHERO,
 																					AgentFacts.NO_RESOURCE)));
 																					
+			expertSystem.AddRule(new Rule(CustomBotFacts.GO_TO_ENEMY_BOT, new Array(CustomBotFacts.SEEN_ENEMY_BOT,
+																					CustomBotFacts.NO_TEAM_BOT_SEEN,	
+																					AgentFacts.NO_RESOURCE,
+																					CustomBotFacts.NO_RESOURCE_SEEN,
+																					CustomBotFacts.SEE_NO_RESOURCE)));
+																					
 			expertSystem.AddRule(new Rule(AgentFacts.TAKE_RESOURCE, 	new Array(	AgentFacts.NO_RESOURCE,
 																					AgentFacts.REACHED_RESOURCE)));
 																					
@@ -82,6 +92,14 @@
 		protected override function UpdateFacts() : void {
 			if (seenPhero) {
 				expertSystem.SetFactValue(CustomBotFacts.SEEN_PHERO, true);
+			}
+			
+			if (seenEnemyBot) {
+				expertSystem.SetFactValue(CustomBotFacts.SEEN_ENEMY_BOT, true);
+			}
+			
+			if (!seenTeamBot) {
+				expertSystem.SetFactValue(CustomBotFacts.NO_TEAM_BOT_SEEN, true);
 			}
 			
 			if (IsNearEdges()) {
@@ -144,9 +162,13 @@
 			
 			if (collidedAgent as Bot) {
 				if ((collidedAgent  as Bot).GetTeamId() == teamId) {
-					Chat(collidedAgent as AntubisBot);
-				} else if ((collidedAgent as Bot).HasResource() && !hasResource) {
-					StealResource(collidedAgent as Bot);
+					seenTeamBot = collidedAgent as AntubisBot;
+					Chat(seenTeamBot);
+				} else {
+					seenEnemyBot = (collidedAgent as Bot).GetCurrentPoint();
+					if ((collidedAgent as Bot).HasResource() && !hasResource) {
+						StealResource(collidedAgent as Bot);
+					}
 				}
 			}
 		}
@@ -163,8 +185,15 @@
 		
 		protected override function Act() : void {
 			for (var i:int = 0; i < expertSystem.GetInferedFacts().length; i++) {
-				if ((expertSystem.GetInferedFacts()[i] as Fact) == CustomBotFacts.GO_TO_PHERO) {
+				var fact:Fact = expertSystem.GetInferedFacts()[i] as Fact;
+				switch (fact) {
+					case CustomBotFacts.GO_TO_PHERO:
 					GoToPhero();
+					break;
+					
+					case CustomBotFacts.GO_TO_ENEMY_BOT:
+					GoToEnemyBot();
+					break;
 				}
 			}
 			super.Act();
@@ -186,6 +215,11 @@
 		protected function GoToPoint(_direction:Point) : void {
 			direction = _direction.subtract(targetPoint);
 			direction.normalize(1);
+		}
+		
+		protected function GoToEnemyBot() : void {
+			GoToPoint(seenEnemyBot);
+			seenEnemyBot = null;
 		}
 		
 		public override function GoToResource() : void {
