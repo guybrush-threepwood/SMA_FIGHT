@@ -21,7 +21,6 @@ package com.Antubis
 		private var lastDropedPhero:Phero;
 		public static var livingPheros:Number;
 		private var seenPheroBot:PheroBot;
-		public var antubisMode:Boolean = false;
 		
 		public function PheroBot(_type:AgentType) {
 			super(_type);
@@ -32,11 +31,6 @@ package com.Antubis
 		public override function Update() : void {
 			super.Update();
 			seenPheroBot = null;
-		}
-		
-		public function SetAntubisMode() : void {
-			super.InitExpertSystem();
-			antubisMode = true;
 		}
 		
 		protected override function InitExpertSystem() : void {
@@ -81,11 +75,6 @@ package com.Antubis
 		}
 		
 		public override function onAgentCollide(_event:AgentCollideEvent) : void  {
-			if (antubisMode) {
-				super.onAgentCollide(_event);
-				return;
-			}
-			
 			var collidedAgent:Agent = _event.GetAgent();
 			
 			if (collidedAgent as Resource) {

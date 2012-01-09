@@ -38,7 +38,7 @@ package com.Antubis
 		public function onAgentCollide(_event:AgentCollideEvent) : void {
 			var collidedAntubisBot:AntubisBot = _event.GetAgent() as AntubisBot;
 			if(collidedAntubisBot) {
-				if (!(collidedAntubisBot as PheroBot) || (collidedAntubisBot as PheroBot).antubisMode == true) {
+				if (!(collidedAntubisBot as PheroBot)) {
 					passes++;
 				}
 			}
