@@ -39,6 +39,7 @@
 		protected var seenEnemyBot:Point;
 		protected var seenTeamBot:AntubisBot;
 		protected var lastSeenResource:Point;
+		protected var stolen:Boolean 			= false;
 		
 		public override function AntubisBot(_type:AgentType) {
 			super(_type);
@@ -52,6 +53,7 @@
 			lastSeenResource = null;
 			seenEnemyBot = null;
 			seenTeamBot = null;
+			stolen = false;
 		}
 		
 		protected override function InitExpertSystem() : void {
@@ -166,8 +168,9 @@
 					Chat(seenTeamBot);
 				} else {
 					seenEnemyBot = (collidedAgent as Bot).GetCurrentPoint();
-					if ((collidedAgent as Bot).HasResource() && !hasResource) {
+					if ((collidedAgent as Bot).HasResource() && !hasResource && !stolen) {
 						StealResource(collidedAgent as Bot);
+						stolen = true;
 					}
 				}
 			}
