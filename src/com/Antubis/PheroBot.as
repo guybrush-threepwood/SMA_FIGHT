@@ -10,7 +10,6 @@ package com.Antubis
 	import com.novabox.MASwithTwoNests.Agent;
 	import com.novabox.MASwithTwoNests.Resource;
 	import com.novabox.expertSystem.ExpertSystem;
-	import com.novabox.MASwithTwoNests.World;
 	import flash.geom.Point;
 	
 	/**
