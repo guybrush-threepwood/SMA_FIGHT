@@ -10,7 +10,7 @@ package com.Antubis
 	import com.novabox.MASwithTwoNests.Agent;
 	import com.novabox.MASwithTwoNests.Resource;
 	import com.novabox.expertSystem.ExpertSystem;
-	import flash.display.ShaderJob;
+	import com.novabox.MASwithTwoNests.World;
 	import flash.geom.Point;
 	
 	/**
@@ -21,6 +21,8 @@ package com.Antubis
 		private var lastDropedPhero:Phero;
 		public static var livingPheros:Number;
 		private var seenPheroBot:PheroBot;
+		private var onceReachedResource:Resource;
+		private var changed:Boolean;
 		
 		public function PheroBot(_type:AgentType) {
 			super(_type);
@@ -28,6 +30,13 @@ package com.Antubis
 		}
 		
 		public override function Update() : void {
+			if(onceReachedResource) {
+				ChangeIntoAntubisBotIfDead();
+			}
+			if (reachedResource) {
+				onceReachedResource = reachedResource;
+			}
+			
 			super.Update();
 			seenPheroBot = null;
 		}
@@ -70,7 +79,7 @@ package com.Antubis
 			if (seenResource) {
 				expertSystem.SetFactValue(AgentFacts.SEE_RESOURCE, true);
 				if (seenPheroBot) {
-					if(seenPheroBot.seenResource != seenResource && !Point.distance(seenResource.GetCurrentPoint(), seenPheroBot.GetCurrentPoint()) <= perceptionRadius/2) {
+					if(seenPheroBot.seenResource != seenResource && !seenPheroBot.IsCollided(seenResource)) {
 						expertSystem.SetFactValue(CustomBotFacts.NO_PHERO_BOT_ON_THIS_RESOURCE, true);
 					}
 				}
@@ -104,6 +113,13 @@ package com.Antubis
 		
 		protected function DropPhero() : void {
 			Drop(lastDropedPhero = new Phero(AntubisAgentType.PHERO, Phero.BASE_LIFETIME*seenResource.GetLife()));
+		}
+		
+		protected function ChangeIntoAntubisBotIfDead() : void {
+			if(onceReachedResource.GetLife() <= 0 && !changed) { 
+				changed = true;
+				super.InitExpertSystem();
+			}
 		}
 	}
 }
