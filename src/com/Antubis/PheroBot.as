@@ -40,7 +40,9 @@ package com.Antubis
 																					
 			expertSystem.AddRule(new Rule(CustomBotFacts.GO_TO_ENEMY_BOT,new Array(	CustomBotFacts.SEEN_ENEMY_BOT,
 																					CustomBotFacts.NO_RESOURCE_SEEN,
-																					CustomBotFacts.SEE_NO_RESOURCE)));
+																					CustomBotFacts.SEE_NO_RESOURCE,
+																					CustomBotFacts.NO_TEAM_BOT_SEEN,
+																					AgentFacts.NO_RESOURCE)));
 			
 			expertSystem.AddRule(new Rule(CustomBotFacts.DROP_PHERO, 	new Array(	CustomBotFacts.LAST_DROPED_PHERO_IS_TOO_FAR,
 																					AgentFacts.SEE_RESOURCE)));
@@ -104,5 +106,4 @@ package com.Antubis
 			Drop(lastDropedPhero = new Phero(AntubisAgentType.PHERO, Phero.BASE_LIFETIME*seenResource.GetLife()));
 		}
 	}
-
 }
