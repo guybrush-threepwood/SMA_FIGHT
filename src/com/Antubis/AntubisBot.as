@@ -166,7 +166,7 @@
 				if ((collidedAgent  as Bot).GetTeamId() == teamId) {
 					seenTeamBot = collidedAgent as AntubisBot;
 					Chat(seenTeamBot);
-				} else {
+				} else if (IsCollided(collidedAgent)) {
 					seenEnemyBot = (collidedAgent as Bot).GetCurrentPoint();
 					if ((collidedAgent as Bot).HasResource() && !hasResource && !stolen) {
 						StealResource(collidedAgent as Bot);
