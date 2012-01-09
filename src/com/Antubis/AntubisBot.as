@@ -34,9 +34,9 @@
 
 	public class AntubisBot extends Bot {
 		
-		private static const EDGE_LIMIT:Number = 6;
-		public  var lastSeenResource:Point;
-		private var seenPhero:Phero;
+		protected static const EDGE_LIMIT:Number = 6;
+		protected var seenPhero:Phero;
+		protected var lastSeenResource:Point;
 		
 		public override function AntubisBot(_type:AgentType) {
 			super(_type);
@@ -46,6 +46,8 @@
 			CorrectLastSeenResource();
 			super.Update();
 			seenPhero = null;
+			seenResource = null;
+			lastSeenResource = null;
 		}
 		
 		protected override function InitExpertSystem() : void {
@@ -63,8 +65,7 @@
 																					AgentFacts.BIGGER_RESOURCE)));
 																					
 			expertSystem.AddRule(new Rule(CustomBotFacts.GO_TO_PHERO,	new Array( 	CustomBotFacts.SEEN_PHERO,
-																					AgentFacts.NO_RESOURCE,
-																					CustomBotFacts.SEE_NO_RESOURCE)));
+																					AgentFacts.NO_RESOURCE)));
 																					
 			expertSystem.AddRule(new Rule(AgentFacts.TAKE_RESOURCE, 	new Array(	AgentFacts.NO_RESOURCE,
 																					AgentFacts.REACHED_RESOURCE)));
@@ -137,7 +138,7 @@
 				lastSeenResource = (collidedAgent as Resource).GetCurrentPoint();
 			}
 			
-			if (collidedAgent as Phero) {
+			if (collidedAgent as Phero && !(collidedAgent as Phero).IsDead()) {
 				seenPhero = (collidedAgent as Phero);
 			}
 			
@@ -151,8 +152,9 @@
 		}
 		
 		protected function Chat(_seenBot:AntubisBot) : void {
+			CorrectLastSeenResource();
 			if (!lastSeenResource) {
-				lastSeenResource = _seenBot.lastSeenResource;
+				lastSeenResource = _seenBot.GetLastSeenResource();
 			}
 			if (!homePosition) {
 				homePosition = _seenBot.GetHomePosition();
@@ -168,9 +170,14 @@
 			super.Act();
 		}
 		
+		protected function GetLastSeenResource() : Point {
+			CorrectLastSeenResource();
+			return lastSeenResource;
+		}
+		
 		protected function CorrectLastSeenResource() : void {
 			if (lastSeenResource) {
-				if (Point.distance(lastSeenResource as Point, new Point(x, y)) <= perceptionRadius && !seenResource) {
+				if (Point.distance(lastSeenResource, new Point(x, y)) <= perceptionRadius && !seenResource) {
 					lastSeenResource = null;
 				}
 			}

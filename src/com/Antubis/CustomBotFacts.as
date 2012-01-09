@@ -28,17 +28,13 @@
 		
 		public static const SEEN_PHERO:Fact						= new Fact("Seen a Phero.");
 		
-		public static const NO_PHERO_DROPED:Fact				= new Fact("No Phero droped.");
-		
-		public static const LAST_DROPED_PHERO_IS_TOO_FAR:Fact	= new Fact("Last droped Phero is at a quarter of the perceptionRadius.");
+		public static const LAST_DROPED_PHERO_IS_TOO_FAR:Fact	= new Fact("Last droped Phero is at midway of the perceptionRadius.");
 		
 		public static const NO_PHERO_BOT_ON_THIS_RESOURCE:Fact	= new Fact("Didn't see another PheroBot on this Resource.");
 		
 		public static const DROP_PHERO:Fact						= new Fact("Drop Phero action.");
 		
 		public static const GO_TO_PHERO:Fact					= new Fact("Go to Phero action.");
-		
-		public static const FOLLOW_RESOURCE:Fact				= new Fact("Follow Resource action.");
 	}
 
 }

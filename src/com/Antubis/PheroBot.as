@@ -19,17 +19,19 @@ package com.Antubis
 	 */
 	public class PheroBot extends AntubisBot {
 		private var lastDropedPhero:Phero;
+		public static var livingPheros:Number;
 		private var seenPheroBot:PheroBot;
 		public var antubisMode:Boolean = false;
 		
 		public function PheroBot(_type:AgentType) {
 			super(_type);
+			color = 0x00FF00;
+			livingPheros = 0;
 		}
 		
 		public override function Update() : void {
 			super.Update();
 			seenPheroBot = null;
-			seenResource = null;
 		}
 		
 		public function SetAntubisMode() : void {
@@ -44,40 +46,38 @@ package com.Antubis
 																					CustomBotFacts.NO_PHERO_BOT_ON_THIS_RESOURCE)));
 			
 			expertSystem.AddRule(new Rule(CustomBotFacts.DROP_PHERO, 	new Array(	CustomBotFacts.LAST_DROPED_PHERO_IS_TOO_FAR,
-																					AgentFacts.GO_TO_RESOURCE)));
-																						
-			expertSystem.AddRule(new Rule(CustomBotFacts.DROP_PHERO,	new Array(	CustomBotFacts.NO_PHERO_DROPED,
-																					AgentFacts.GO_TO_RESOURCE)));
+																					AgentFacts.SEE_RESOURCE)));
+																					
+			expertSystem.AddRule(new Rule(AgentFacts.PUT_DOWN_RESOURCE,	new Array(	AgentFacts.AT_HOME,
+																					AgentFacts.GOT_RESOURCE)));
+																					
+			expertSystem.AddRule(new Rule(AgentFacts.TAKE_RESOURCE, 	new Array(	AgentFacts.NO_RESOURCE,
+																					AgentFacts.AT_HOME,
+																					AgentFacts.REACHED_RESOURCE)));
 																				
 			expertSystem.AddRule(new Rule(AgentFacts.CHANGE_DIRECTION, 	new Array(	CustomBotFacts.NEAR_EDGES)));
 		}
 		
 		protected override function UpdateFacts() : void {
-			if (antubisMode) {
-				super.UpdateFacts();
-				return;
-			}
-			
-			if (IsNearEdges()) {
-				expertSystem.SetFactValue(CustomBotFacts.NEAR_EDGES, true);
-			}
-			
-			if (lastDropedPhero) {
-				if(Point.distance(new Point(lastDropedPhero.x, lastDropedPhero.y), new Point(x, y)) >= perceptionRadius/4) {
+			var lastSeenPhero:Phero = lastDropedPhero != null ? lastDropedPhero : seenPhero;
+			if (lastSeenPhero) {
+				if(Point.distance(new Point(lastSeenPhero.x, lastSeenPhero.y), new Point(x, y)) >= perceptionRadius/2) {
 					expertSystem.SetFactValue(CustomBotFacts.LAST_DROPED_PHERO_IS_TOO_FAR, true);
 				}
 			} else {
-				expertSystem.SetFactValue(CustomBotFacts.NO_PHERO_DROPED, true);
+				expertSystem.SetFactValue(CustomBotFacts.LAST_DROPED_PHERO_IS_TOO_FAR, true);
 			}
 			
 			if (seenResource) {
 				expertSystem.SetFactValue(AgentFacts.SEE_RESOURCE, true);
 				if (seenPheroBot) {
-					if(seenPheroBot.seenResource != seenResource && !seenResource.hitTestObject(seenPheroBot)) {
+					if(seenPheroBot.seenResource != seenResource && !Point.distance(seenResource.GetCurrentPoint(), seenPheroBot.GetCurrentPoint()) <= perceptionRadius/2) {
 						expertSystem.SetFactValue(CustomBotFacts.NO_PHERO_BOT_ON_THIS_RESOURCE, true);
 					}
 				}
 			}
+			
+			super.UpdateFacts();
 		}
 		
 		public override function onAgentCollide(_event:AgentCollideEvent) : void  {
@@ -91,6 +91,9 @@ package com.Antubis
 			if (collidedAgent as Resource) {
 				seenResource = collidedAgent as Resource;
 				lastSeenResource = seenResource.GetCurrentPoint();
+				if (IsCollided(collidedAgent)) {
+					reachedResource = (collidedAgent as Resource);
+				}
 			}
 			
 			if (collidedAgent as PheroBot) {
@@ -103,6 +106,10 @@ package com.Antubis
 				}
 			}
 			
+			if (collidedAgent as Phero) {
+				seenPhero = collidedAgent as Phero;
+			}
+			
 			if (collidedAgent.GetType() == AgentType.AGENT_BOT_HOME) {
 				if ((collidedAgent as BotHome).GetTeamId() == teamId) {
 					home = collidedAgent as BotHome;
@@ -112,11 +119,6 @@ package com.Antubis
 		}
 		
 		protected override function Act() : void {
-			if (antubisMode) {
-				super.Act();
-				return;
-			}
-			
 			var inferedFacts:Array = expertSystem.GetInferedFacts();
 			
 			for (var i:int = 0; i < inferedFacts.length; i++) {
