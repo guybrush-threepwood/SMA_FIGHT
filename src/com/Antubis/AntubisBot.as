@@ -162,16 +162,21 @@
 				seenPhero = (collidedAgent as Phero);
 			}
 			
+			var enemyBot:Bot;
 			if (collidedAgent as Bot) {
 				if ((collidedAgent  as Bot).GetTeamId() == teamId) {
 					seenTeamBot = collidedAgent as AntubisBot;
 					Chat(seenTeamBot);
-				} else if (IsCollided(collidedAgent)) {
-					seenEnemyBot = (collidedAgent as Bot).GetCurrentPoint();
-					if ((collidedAgent as Bot).HasResource() && !hasResource && !stolen) {
-						StealResource(collidedAgent as Bot);
-						stolen = true;
-					}
+				} else {
+					enemyBot = (collidedAgent as Bot);
+				}
+			}
+			
+			if (enemyBot) {
+				seenEnemyBot = enemyBot.GetCurrentPoint();
+				if (IsCollided(enemyBot) && enemyBot.HasResource() && !hasResource && !stolen) {
+					StealResource(enemyBot);
+					stolen = true;
 				}
 			}
 		}
