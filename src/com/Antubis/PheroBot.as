@@ -20,8 +20,8 @@ package com.Antubis
 		private var lastDropedPhero:Phero;
 		public static var livingPheros:Number;
 		private var seenPheroBot:PheroBot;
-		private var onceReachedResource:Resource;
-		private var changed:Boolean;
+		private var antubisMode:Boolean;
+		private var pheroMode:Boolean;
 		
 		public function PheroBot(_type:AgentType) {
 			super(_type);
@@ -29,11 +29,15 @@ package com.Antubis
 		}
 		
 		public override function Update() : void {
-			if(onceReachedResource) {
-				ChangeIntoAntubisBotIfDead();
+			if (reachedResource && !antubisMode) {
+				antubisMode = true;
+				pheroMode = false;
+				super.InitExpertSystem();
 			}
-			if (reachedResource) {
-				onceReachedResource = reachedResource;
+			if (!seenResource && !lastSeenResource && !hasResource && !pheroMode) {
+				antubisMode = false;
+				pheroMode = true;
+				InitExpertSystem();
 			}
 			
 			super.Update();
@@ -112,13 +116,6 @@ package com.Antubis
 		
 		protected function DropPhero() : void {
 			Drop(lastDropedPhero = new Phero(AntubisAgentType.PHERO, Phero.BASE_LIFETIME*seenResource.GetLife()));
-		}
-		
-		protected function ChangeIntoAntubisBotIfDead() : void {
-			if(onceReachedResource.GetLife() <= 0 && !changed) { 
-				changed = true;
-				super.InitExpertSystem();
-			}
 		}
 	}
 }

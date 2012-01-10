@@ -186,7 +186,7 @@
 			if (!lastSeenResource) {
 				lastSeenResource = _seenBot.GetLastSeenResource();
 			}
-			if (!homePosition) {
+			if (_seenBot.GetHomePosition()) {
 				homePosition = _seenBot.GetHomePosition();
 			}
 		}
