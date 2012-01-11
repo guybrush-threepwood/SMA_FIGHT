@@ -41,7 +41,6 @@
 		protected var seenEnemyBot:Point;
 		protected var seenTeamBot:AntubisBot;
 		protected var lastSeenResource:Point;
-		protected var lastSeenResourceLife:Number;
 		protected var takenResourceLife:Number;
 		protected var passedPheros:Array;
 		protected var resetTimer:Number;
@@ -49,7 +48,6 @@
 		public override function AntubisBot(_type:AgentType) {
 			super(_type);
 			resetTimer = 0;
-			lastSeenResourceLife = 0;
 			passedPheros = new Array();
 		}
 		
@@ -59,7 +57,6 @@
 			seenPhero = null;
 			seenResource = null;
 			lastSeenResource = null;
-			lastSeenResourceLife = 0;
 			seenEnemyBot = null;
 			seenTeamBot = null;
 			stolen = false;
@@ -178,7 +175,6 @@
 			
 			if (collidedAgent as Resource) {
 				lastSeenResource = (collidedAgent as Resource).GetCurrentPoint();
-				lastSeenResourceLife = (collidedAgent as Resource).GetLife();
 			}
 			
 			if (collidedAgent as Phero && !(collidedAgent as Phero).IsDead()) {
@@ -239,11 +235,7 @@
 		
 		protected function GetLastSeenResource() : Point {
 			CorrectLastSeenResource();
-			if (lastSeenResourceLife / World.RESOURCE_UPDATE_VALUE >= 2) {
-				return lastSeenResource;
-			} else {
-				return null;
-			}
+			return lastSeenResource;
 		}
 		
 		protected function CorrectLastSeenResource() : void {
