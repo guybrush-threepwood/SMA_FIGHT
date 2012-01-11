@@ -35,14 +35,18 @@
 	public class AntubisBot extends Bot {
 		
 		protected static const EDGE_LIMIT:Number = 6;
+		protected var stolen:Boolean 			= false;
 		protected var seenPhero:Phero;
 		protected var seenEnemyBot:Point;
 		protected var seenTeamBot:AntubisBot;
 		protected var lastSeenResource:Point;
-		protected var stolen:Boolean 			= false;
+		protected var takenResourceLife:Number;
+		protected var passedPheros:Array;
+		protected var resetTimer:Number;
 		
 		public override function AntubisBot(_type:AgentType) {
 			super(_type);
+			passedPheros = new Array();
 		}
 		
 		public override function Update() : void {
@@ -54,6 +58,11 @@
 			seenEnemyBot = null;
 			seenTeamBot = null;
 			stolen = false;
+			resetTimer += TimeManager.timeManager.GetFrameDeltaTime();
+			if (resetTimer == TimeManager.timeManager.GetFrameDeltaTime() * 10) {
+				passedPheros = new Array();
+				resetTimer = 0;
+			}
 		}
 		
 		protected override function InitExpertSystem() : void {
@@ -71,7 +80,13 @@
 																					AgentFacts.BIGGER_RESOURCE)));
 																					
 			expertSystem.AddRule(new Rule(CustomBotFacts.GO_TO_PHERO,	new Array( 	CustomBotFacts.SEEN_PHERO,
-																					AgentFacts.NO_RESOURCE)));
+																					CustomBotFacts.PHERO_NOT_ALREADY_PASSED,
+																					AgentFacts.NO_RESOURCE,
+																					CustomBotFacts.SEE_NO_RESOURCE,
+																					CustomBotFacts.NO_RESOURCE_SEEN)));
+																					
+			expertSystem.AddRule(new Rule(CustomBotFacts.RENFORCE_PHERO,new Array(	CustomBotFacts.SEEN_PHERO,
+																					AgentFacts.GOT_RESOURCE)));
 																					
 			expertSystem.AddRule(new Rule(CustomBotFacts.GO_TO_ENEMY_BOT, new Array(CustomBotFacts.SEEN_ENEMY_BOT,
 																					CustomBotFacts.NO_TEAM_BOT_SEEN,	
@@ -94,6 +109,9 @@
 		protected override function UpdateFacts() : void {
 			if (seenPhero) {
 				expertSystem.SetFactValue(CustomBotFacts.SEEN_PHERO, true);
+				if (passedPheros.indexOf(seenPhero) == -1) {
+					expertSystem.SetFactValue(CustomBotFacts.PHERO_NOT_ALREADY_PASSED, true);
+				}
 			}
 			
 			if (seenEnemyBot) {
@@ -189,6 +207,9 @@
 			if (_seenBot.GetHomePosition()) {
 				homePosition = _seenBot.GetHomePosition();
 			}
+			if (!seenPhero) {
+				seenPhero = _seenBot.seenPhero;
+			}
 		}
 		
 		protected override function Act() : void {
@@ -201,6 +222,10 @@
 					
 					case CustomBotFacts.GO_TO_ENEMY_BOT:
 					GoToEnemyBot();
+					break;
+					
+					case CustomBotFacts.RENFORCE_PHERO:
+					RenforcePhero();
 					break;
 				}
 			}
@@ -238,11 +263,21 @@
 			lastReachedResource = null;
 		}
 		
-		public function GoToPhero() : void {
+		protected function GoToPhero() : void {
 			if (seenPhero) {
+				passedPheros.push(seenPhero);
 				GoToPoint(seenPhero.GetCurrentPoint());
 				seenPhero = null;
 			}
+		}
+		
+		protected function RenforcePhero() : void {
+			seenPhero.lifetime += takenResourceLife * TimeManager.timeManager.GetFrameDeltaTime();
+		}
+		
+		public override function TakeResource() : void {
+			super.TakeResource();
+			takenResourceLife = takenResource.GetLife();
 		}
 		
 		protected function IsAtHome() : Boolean {
