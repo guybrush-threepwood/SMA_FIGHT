@@ -21,7 +21,7 @@ package com.Antubis
 		public var lifetime:Number;
 		protected var start_lifetime:Number;
 		protected static const MAX_LIVING_PHEROS:Number	= 300;
-		public static const BASE_LIFETIME:Number		= 9000;
+		public static const BASE_LIFETIME:Number		= 10000;
 		
 		public function Phero(_type:AgentType, _lifetime:Number) {
 			super(_type);

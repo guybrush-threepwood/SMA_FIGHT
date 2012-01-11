@@ -1,6 +1,7 @@
 ﻿package com.Antubis 
 {
 	import com.novabox.expertSystem.Fact;
+	
 	/**
 	 * Cognitive Multi-Agent System Example
 	 * Part 2 : Two distinct termite nests
@@ -9,9 +10,6 @@
 	 * @author Maximilien Noal & Antubis Team
 	 * @version 1.0
 	 */
-	 //*****************************************************************
-	// TODO : Register here all new facts used by your custom bots.
-	//*****************************************************************
 	
 	public class CustomBotFacts {
 		public static const SEE_NO_RESOURCE:Fact				= new Fact("No Resource is perceived.");

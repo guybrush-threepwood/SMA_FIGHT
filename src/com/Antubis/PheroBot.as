@@ -33,7 +33,7 @@ package com.Antubis
 				pheroMode = false;
 				super.InitExpertSystem();
 			}
-			if (!seenResource && !lastSeenResource && !hasResource && !pheroMode) {
+			if (IsAtHome() && !hasResource && !pheroMode) {
 				antubisMode = false;
 				pheroMode = true;
 				InitExpertSystem();

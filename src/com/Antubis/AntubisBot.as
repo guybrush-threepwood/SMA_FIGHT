@@ -13,6 +13,7 @@
 	import com.novabox.MASwithTwoNests.Resource;
 	import com.novabox.expertSystem.Fact;
 	import com.novabox.expertSystem.Rule;
+	import com.novabox.MASwithTwoNests.World;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.geom.Point;
@@ -34,18 +35,21 @@
 
 	public class AntubisBot extends Bot {
 		
-		protected static const EDGE_LIMIT:Number = 6;
+		protected static const EDGE_LIMIT:Number= 6;
 		protected var stolen:Boolean 			= false;
 		protected var seenPhero:Phero;
 		protected var seenEnemyBot:Point;
 		protected var seenTeamBot:AntubisBot;
 		protected var lastSeenResource:Point;
+		protected var lastSeenResourceLife:Number;
 		protected var takenResourceLife:Number;
 		protected var passedPheros:Array;
 		protected var resetTimer:Number;
 		
 		public override function AntubisBot(_type:AgentType) {
 			super(_type);
+			resetTimer = 0;
+			lastSeenResourceLife = 0;
 			passedPheros = new Array();
 		}
 		
@@ -55,11 +59,11 @@
 			seenPhero = null;
 			seenResource = null;
 			lastSeenResource = null;
+			lastSeenResourceLife = 0;
 			seenEnemyBot = null;
 			seenTeamBot = null;
 			stolen = false;
-			resetTimer += TimeManager.timeManager.GetFrameDeltaTime();
-			if (resetTimer == TimeManager.timeManager.GetFrameDeltaTime() * 20) {
+			if (resetTimer >= TimeManager.timeManager.GetFrameDeltaTime() * 5) {
 				passedPheros = new Array();
 				resetTimer = 0;
 			}
@@ -144,8 +148,8 @@
 				if (IsCloser(seenResource)) {
 					expertSystem.SetFactValue(CustomBotFacts.CLOSER_RESOURCE, true);
 				} 
-				if (takenResource && seenResource.GetLife() > takenResource.GetLife()) {
-					expertSystem.SetFactValue(AgentFacts.BIGGER_RESOURCE, true);							
+				if (takenResource && seenResource.GetLife() > takenResourceLife) {
+					expertSystem.SetFactValue(AgentFacts.BIGGER_RESOURCE, true);
 				}
 			} else {
 				expertSystem.SetFactValue(CustomBotFacts.SEE_NO_RESOURCE, true);
@@ -174,6 +178,7 @@
 			
 			if (collidedAgent as Resource) {
 				lastSeenResource = (collidedAgent as Resource).GetCurrentPoint();
+				lastSeenResourceLife = (collidedAgent as Resource).GetLife();
 			}
 			
 			if (collidedAgent as Phero && !(collidedAgent as Phero).IsDead()) {
@@ -234,7 +239,11 @@
 		
 		protected function GetLastSeenResource() : Point {
 			CorrectLastSeenResource();
-			return lastSeenResource;
+			if (lastSeenResourceLife / World.RESOURCE_UPDATE_VALUE >= 2) {
+				return lastSeenResource;
+			} else {
+				return null;
+			}
 		}
 		
 		protected function CorrectLastSeenResource() : void {
@@ -272,7 +281,7 @@
 		}
 		
 		protected function RenforcePhero() : void {
-			seenPhero.lifetime += takenResourceLife * TimeManager.timeManager.GetFrameDeltaTime();
+			seenPhero.lifetime = takenResourceLife*Phero.BASE_LIFETIME;
 		}
 		
 		public override function TakeResource() : void {
