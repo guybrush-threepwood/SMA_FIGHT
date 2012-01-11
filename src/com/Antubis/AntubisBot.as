@@ -59,7 +59,7 @@
 			seenTeamBot = null;
 			stolen = false;
 			resetTimer += TimeManager.timeManager.GetFrameDeltaTime();
-			if (resetTimer == TimeManager.timeManager.GetFrameDeltaTime() * 10) {
+			if (resetTimer == TimeManager.timeManager.GetFrameDeltaTime() * 20) {
 				passedPheros = new Array();
 				resetTimer = 0;
 			}
