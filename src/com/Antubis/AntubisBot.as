@@ -60,7 +60,7 @@
 			seenEnemyBot = null;
 			seenTeamBot = null;
 			stolen = false;
-			if (resetTimer >= TimeManager.timeManager.GetFrameDeltaTime() * 5) {
+			if (resetTimer >= Phero.BASE_LIFETIME*World.RESOURCE_START_LIFE) {
 				passedPheros = new Array();
 				resetTimer = 0;
 			}
@@ -220,9 +220,6 @@
 			}
 			if (_seenBot.GetHomePosition()) {
 				homePosition = _seenBot.GetHomePosition();
-			}
-			if (!seenPhero) {
-				seenPhero = _seenBot.seenPhero;
 			}
 		}
 		
