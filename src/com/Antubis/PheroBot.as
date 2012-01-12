@@ -33,7 +33,7 @@ package com.Antubis
 				pheroMode = false;
 				super.InitExpertSystem();
 			}
-			if (IsAtHome() && !hasResource && !pheroMode) {
+			if (!seenResource && !lastSeenResource && !hasResource && !pheroMode) {
 				antubisMode = false;
 				pheroMode = true;
 				InitExpertSystem();
@@ -57,7 +57,11 @@ package com.Antubis
 																					AgentFacts.AT_HOME,
 																					AgentFacts.REACHED_RESOURCE)));
 																					
-			expertSystem.AddRule(new Rule(AgentFacts.CHANGE_DIRECTION, 	new Array(	CustomBotFacts.NEAR_EDGES)));
+			expertSystem.AddRule(new Rule(AgentFacts.CHANGE_DIRECTION, 	new Array(	CustomBotFacts.NEAR_EDGES,
+																					CustomBotFacts.NOT_GOING_HOME)));
+																					
+			expertSystem.AddRule(new Rule(AgentFacts.CHANGE_DIRECTION, 	new Array(	CustomBotFacts.NEAR_EDGES,
+																					CustomBotFacts.NOT_GOING_TO_RESOURCE)));
 		}
 		
 		protected override function UpdateFacts() : void {

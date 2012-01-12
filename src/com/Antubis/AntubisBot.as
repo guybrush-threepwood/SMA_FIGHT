@@ -90,7 +90,7 @@
 																					AgentFacts.GOT_RESOURCE)));
 																					
 			expertSystem.AddRule(new Rule(CustomBotFacts.GO_TO_ENEMY_BOT, new Array(CustomBotFacts.SEEN_ENEMY_BOT,
-																					CustomBotFacts.NO_TEAM_BOT_SEEN,	
+																					CustomBotFacts.NO_TEAM_BOT_SEEN,
 																					AgentFacts.NO_RESOURCE,
 																					CustomBotFacts.NO_RESOURCE_SEEN,
 																					CustomBotFacts.SEE_NO_RESOURCE)));
@@ -104,7 +104,11 @@
 			expertSystem.AddRule(new Rule(AgentFacts.PUT_DOWN_RESOURCE,	new Array(	AgentFacts.AT_HOME,
 																					AgentFacts.GOT_RESOURCE)));
 			
-			expertSystem.AddRule(new Rule(AgentFacts.CHANGE_DIRECTION, 	new Array(	CustomBotFacts.NEAR_EDGES)));
+			expertSystem.AddRule(new Rule(AgentFacts.CHANGE_DIRECTION, 	new Array(	CustomBotFacts.NEAR_EDGES,
+																					CustomBotFacts.NOT_GOING_HOME)));
+																					
+			expertSystem.AddRule(new Rule(AgentFacts.CHANGE_DIRECTION, 	new Array(	CustomBotFacts.NEAR_EDGES,
+																					CustomBotFacts.NOT_GOING_TO_RESOURCE)));
 		}
 		
 		protected override function UpdateFacts() : void {
@@ -113,6 +117,10 @@
 				if (passedPheros.indexOf(seenPhero) == -1) {
 					expertSystem.SetFactValue(CustomBotFacts.PHERO_NOT_ALREADY_PASSED, true);
 				}
+			}
+			
+			if (home && !home.hitTestPoint(direction.x, direction.y) || !home) {
+				expertSystem.SetFactValue(CustomBotFacts.NOT_GOING_HOME, true);
 			}
 			
 			if (seenEnemyBot) {
@@ -138,6 +146,11 @@
 				expertSystem.SetFactValue(CustomBotFacts.SEEN_RESOURCE, true);
 			} else {
 				expertSystem.SetFactValue(CustomBotFacts.NO_RESOURCE_SEEN, true);
+			}
+			
+			
+			if (!seenResource || seenResource && !seenResource.hitTestPoint(direction.x, direction.y)) {
+				expertSystem.SetFactValue(CustomBotFacts.NOT_GOING_TO_RESOURCE, true);
 			}
 				
 			if (seenResource) {

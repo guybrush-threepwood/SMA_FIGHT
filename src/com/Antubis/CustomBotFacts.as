@@ -22,6 +22,8 @@
 		public static const SEEN_PHERO:Fact						= new Fact("Seen a Phero.");
 		public static const PHERO_NOT_ALREADY_PASSED:Fact		= new Fact("Not already passed on this Phero.");
 		public static const LAST_DROPED_PHERO_IS_TOO_FAR:Fact	= new Fact("Last droped Phero is at midway of the perceptionRadius.");
+		public static const NOT_GOING_HOME:Fact					= new Fact("My direction is not Home");
+		public static const NOT_GOING_TO_RESOURCE:Fact			= new Fact("My direction is not to a *perceivable* Resource");
 		public static const DROP_PHERO:Fact						= new Fact("Drop Phero action.");
 		public static const GO_TO_PHERO:Fact					= new Fact("Go to Phero action.");
 		public static const GO_TO_ENEMY_BOT:Fact				= new Fact("Go to enemy bot action.");
