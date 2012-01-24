@@ -1,15 +1,9 @@
 package com.Antubis 
 {
-	import com.novabox.MASwithTwoNests.Agent;
 	import com.Antubis.PheroBot;
+	import com.novabox.MASwithTwoNests.Agent;
 	import com.novabox.MASwithTwoNests.AgentType;
-	import com.novabox.MASwithTwoNests.Bot;
-	import com.novabox.MASwithTwoNests.Resource;
 	import com.novabox.MASwithTwoNests.TimeManager;
-	import com.novabox.MASwithTwoNests.AgentCollideEvent;
-	import flash.geom.Point;
-	import flash.events.Event;
-	import flash.ui.MouseCursor;
 	
 	/**
 	 * ...

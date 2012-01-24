@@ -1,21 +1,7 @@
 ﻿package com.Antubis 
 {
-	import com.novabox.MASwithTwoNests.World;
-	import com.novabox.MASwithTwoNests.AgentCollideEvent;
-	import com.novabox.MASwithTwoNests.AgentType;
-	import com.novabox.MASwithTwoNests.Bot;
-	import com.novabox.MASwithTwoNests.BotHome;
-	import com.novabox.expertSystem.ExpertSystem;
-	import com.novabox.MASwithTwoNests.AgentFacts;
-	import com.novabox.MASwithTwoNests.TimeManager;
-	import com.novabox.MASwithTwoNests.Agent;
-	import com.novabox.MASwithTwoNests.Main;
-	import com.novabox.MASwithTwoNests.Resource;
-	import com.novabox.expertSystem.Fact;
-	import com.novabox.expertSystem.Rule;
-	import com.novabox.MASwithTwoNests.World;
-	import flash.display.Sprite;
-	import flash.events.Event;
+	import com.novabox.expertSystem.*;
+	import com.novabox.MASwithTwoNests.*;
 	import flash.geom.Point;
 	
 	
