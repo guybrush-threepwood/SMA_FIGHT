@@ -20,17 +20,7 @@ package com.Antubis
 		}
 		
 		public override function Update() : void {
-			if (reachedResource && !antubisMode) {
-				antubisMode = true;
-				pheroMode = false;
-				super.InitExpertSystem();
-			}
-			if (!seenResource && !lastSeenResource && !hasResource && !pheroMode) {
-				antubisMode = false;
-				pheroMode = true;
-				InitExpertSystem();
-			}
-			
+			CheckMode();
 			super.Update();
 		}
 		
@@ -54,6 +44,11 @@ package com.Antubis
 																					
 			expertSystem.AddRule(new Rule(AgentFacts.CHANGE_DIRECTION, 	new Array(	CustomBotFacts.NEAR_EDGES,
 																					CustomBotFacts.NOT_GOING_TO_RESOURCE)));
+		}
+		
+		public override function onAgentCollide(_event:AgentCollideEvent) : void  {
+			super.onAgentCollide(_event);
+			CheckMode();
 		}
 		
 		protected override function UpdateFacts() : void {
@@ -83,6 +78,19 @@ package com.Antubis
 		
 		protected function DropPhero() : void {
 			Drop(lastDropedPhero = new Phero(AntubisAgentType.PHERO, Phero.BASE_LIFETIME*seenResource.GetLife()));
+		}
+		
+		protected function CheckMode() : void {
+			if (reachedResource && !antubisMode) {
+				antubisMode = true;
+				pheroMode = false;
+				super.InitExpertSystem();
+			}
+			if (!seenResource && !lastSeenResource && !hasResource && !pheroMode) {
+				antubisMode = false;
+				pheroMode = true;
+				InitExpertSystem();
+			}
 		}
 	}
 }
