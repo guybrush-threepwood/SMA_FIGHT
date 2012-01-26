@@ -23,8 +23,8 @@
 		
 		protected static const EDGE_LIMIT:Number= 6;
 		protected var stolen:Boolean 			= false;
-		protected var seenPhero:Phero;
-		protected var seenEnemyBot:Point;
+		public var seenPhero:Phero;
+		public var seenEnemyBot:Point;
 		protected var seenTeamBot:AntubisBot;
 		protected var lastSeenResource:Point;
 		protected var takenResourceLife:Number;
@@ -209,6 +209,9 @@
 			}
 			if (!seenPhero) {
 				seenPhero = chatBot.seenPhero;
+			}
+			if (!seenEnemyBot) {
+				seenEnemyBot = chatBot.seenEnemyBot;
 			}
 		}
 		
