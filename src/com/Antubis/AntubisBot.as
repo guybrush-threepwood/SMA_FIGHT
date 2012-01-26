@@ -46,7 +46,7 @@
 			seenEnemyBot = null;
 			seenTeamBot = null;
 			stolen = false;
-			if (resetTimer >= Phero.BASE_LIFETIME*World.RESOURCE_START_LIFE) {
+			if (resetTimer >= Phero.BASE_LIFETIME*World.RESOURCE_START_LIFE*2) {
 				passedPheros = new Array();
 				resetTimer = 0;
 			}
