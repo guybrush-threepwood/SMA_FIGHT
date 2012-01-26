@@ -144,7 +144,7 @@
 				if (IsCloser(seenResource)) {
 					expertSystem.SetFactValue(CustomBotFacts.CLOSER_RESOURCE, true);
 				} 
-				if (takenResource && seenResource.GetLife() > takenResourceLife) {
+				if (takenResourceLife && seenResource.GetLife() > takenResourceLife) {
 					expertSystem.SetFactValue(AgentFacts.BIGGER_RESOURCE, true);
 				}
 			} else {
@@ -161,10 +161,6 @@
 			
 			if (IsAtHome()) {
 				expertSystem.SetFactValue(AgentFacts.AT_HOME, true);
-			}
-			
-			if (hasResource) {
-				expertSystem.SetFactValue(AgentFacts.GOT_RESOURCE, true);
 			}
 		}
 		
