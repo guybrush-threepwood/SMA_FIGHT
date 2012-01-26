@@ -199,13 +199,16 @@
 			}
 		}
 		
-		protected function Chat(_seenBot:AntubisBot) : void {
+		protected function Chat(chatBot:AntubisBot) : void {
 			CorrectLastSeenResource();
 			if (!lastSeenResource) {
-				lastSeenResource = _seenBot.GetLastSeenResource();
+				lastSeenResource = chatBot.GetLastSeenResource();
 			}
-			if (_seenBot.GetHomePosition()) {
-				homePosition = _seenBot.GetHomePosition();
+			if (chatBot.GetHomePosition()) {
+				homePosition = chatBot.GetHomePosition();
+			}
+			if (!seenPhero) {
+				seenPhero = chatBot.seenPhero;
 			}
 		}
 		
