@@ -293,7 +293,7 @@
 		}
 		
 		protected function IsCloser(_agent:Agent) : Boolean {
-			return (Point.distance(new Point(_agent.x, _agent.y), new Point(x, y)) > 
+			return (Point.distance(new Point(_agent.x, _agent.y), new Point(x, y)) < 
 					Point.distance(direction, new Point(x, y)));
 		}
 	}
