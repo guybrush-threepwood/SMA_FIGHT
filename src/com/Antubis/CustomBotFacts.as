@@ -26,6 +26,7 @@
 		public static const NOT_GOING_TO_RESOURCE:Fact			= new Fact("My direction is not to a *perceivable* Resource");
 		public static const DROP_PHERO:Fact						= new Fact("Drop Phero action.");
 		public static const GO_TO_PHERO:Fact					= new Fact("Go to Phero action.");
+		public static const GO_BACK:Fact						= new Fact("Go back action.");
 		public static const GO_TO_ENEMY_BOT:Fact				= new Fact("Go to enemy bot action.");
 		public static const RENFORCE_PHERO:Fact					= new Fact("Renforce Phero action.");
 	}
