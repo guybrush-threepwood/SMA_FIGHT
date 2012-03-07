@@ -23,17 +23,21 @@
 		
 		protected static const EDGE_LIMIT:Number= 6;
 		protected var stolen:Boolean 			= false;
-		public var seenPhero:Phero;
-		public var seenEnemyBot:Point;
+		protected var seenPhero:Phero;
+		protected var takenResourcePos:Point;
 		protected var seenTeamBot:AntubisBot;
 		protected var lastSeenResource:Point;
+		protected var lastDropedPhero:Phero;
 		protected var takenResourceLife:Number;
 		protected var passedPheros:Array;
-		protected var resetTimer:Number;
+		public static var livingPheros:Number;
+		public var seenEnemyBot:Point;
+		public static var dropedPheros:Array;
+		public var lastSeenResourceLife:Number;
 		
 		public override function AntubisBot(_type:AgentType) {
 			super(_type);
-			resetTimer = 0;
+			dropedPheros = new Array();
 			passedPheros = new Array();
 		}
 		
@@ -46,10 +50,6 @@
 			seenEnemyBot = null;
 			seenTeamBot = null;
 			stolen = false;
-			if (resetTimer >= Phero.BASE_LIFETIME*World.RESOURCE_START_LIFE*2) {
-				passedPheros = new Array();
-				resetTimer = 0;
-			}
 		}
 		
 		protected override function InitExpertSystem() : void {
@@ -71,9 +71,9 @@
 																					AgentFacts.NO_RESOURCE,
 																					CustomBotFacts.SEE_NO_RESOURCE,
 																					CustomBotFacts.NO_RESOURCE_SEEN)));
-																					
-			expertSystem.AddRule(new Rule(CustomBotFacts.RENFORCE_PHERO,new Array(	CustomBotFacts.SEEN_PHERO,
-																					AgentFacts.GOT_RESOURCE)));
+			
+			expertSystem.AddRule(new Rule(CustomBotFacts.DROP_PHERO,	new Array(	CustomBotFacts.SEEN_RESOURCE,
+																					CustomBotFacts.LAST_DROPED_PHERO_IS_TOO_FAR)));
 																					
 			expertSystem.AddRule(new Rule(CustomBotFacts.GO_TO_ENEMY_BOT, new Array(CustomBotFacts.SEEN_ENEMY_BOT,
 																					CustomBotFacts.NO_TEAM_BOT_SEEN,
@@ -89,6 +89,8 @@
 																					
 			expertSystem.AddRule(new Rule(AgentFacts.PUT_DOWN_RESOURCE,	new Array(	AgentFacts.AT_HOME,
 																					AgentFacts.GOT_RESOURCE)));
+																					
+			expertSystem.AddRule(new Rule(CustomBotFacts.GO_BACK, 			new Array(	AgentFacts.PUT_DOWN_RESOURCE)));
 			
 			expertSystem.AddRule(new Rule(AgentFacts.CHANGE_DIRECTION, 	new Array(	CustomBotFacts.NEAR_EDGES,
 																					CustomBotFacts.NOT_GOING_HOME)));
@@ -98,6 +100,15 @@
 		}
 		
 		protected override function UpdateFacts() : void {
+			var lastSeenPhero:Phero = lastDropedPhero != null ? lastDropedPhero : seenPhero;
+			if (lastSeenPhero) {
+				if(Point.distance(new Point(lastSeenPhero.x, lastSeenPhero.y), new Point(x, y)) >= perceptionRadius) {
+					expertSystem.SetFactValue(CustomBotFacts.LAST_DROPED_PHERO_IS_TOO_FAR, true);
+				}
+			} else {
+				expertSystem.SetFactValue(CustomBotFacts.LAST_DROPED_PHERO_IS_TOO_FAR, true);
+			}
+			
 			if (seenPhero) {
 				expertSystem.SetFactValue(CustomBotFacts.SEEN_PHERO, true);
 				if (passedPheros.indexOf(seenPhero) == -1) {
@@ -170,6 +181,7 @@
 			
 			if (collidedAgent as Resource) {
 				lastSeenResource = (collidedAgent as Resource).GetCurrentPoint();
+				lastSeenResourceLife = (collidedAgent as Resource).GetLife();
 			}
 			
 			if (collidedAgent as Phero && !(collidedAgent as Phero).IsDead()) {
@@ -199,12 +211,13 @@
 			CorrectLastSeenResource();
 			if (!lastSeenResource) {
 				lastSeenResource = chatBot.GetLastSeenResource();
+				lastSeenResourceLife = chatBot.lastSeenResourceLife;
 			}
 			if (chatBot.GetHomePosition()) {
 				homePosition = chatBot.GetHomePosition();
 			}
 			if (!seenPhero) {
-				seenPhero = chatBot.seenPhero;
+				seenPhero = chatBot.GetSeenPhero();
 			}
 			if (!seenEnemyBot) {
 				seenEnemyBot = chatBot.seenEnemyBot;
@@ -223,8 +236,12 @@
 					GoToEnemyBot();
 					break;
 					
-					case CustomBotFacts.RENFORCE_PHERO:
-					RenforcePhero();
+					case CustomBotFacts.DROP_PHERO:
+					DropPhero();
+					break;
+					
+					case CustomBotFacts.GO_BACK:
+					GoBack()
 					break;
 				}
 			}
@@ -233,7 +250,19 @@
 		
 		protected function GetLastSeenResource() : Point {
 			CorrectLastSeenResource();
-			return lastSeenResource;
+			if(lastSeenResource) {
+				return lastSeenResource
+			} else if (takenResourcePos) {
+				return takenResourcePos;
+			}
+			return null;
+		}
+		
+		protected function GetSeenPhero () : Phero {
+			if (seenPhero && passedPheros.indexOf(seenPhero) != -1) {
+				return seenPhero;
+			}
+			return null;
 		}
 		
 		protected function CorrectLastSeenResource() : void {
@@ -244,9 +273,19 @@
 			}
 		}
 		
+		protected function DropPhero() : void {
+			Drop(lastDropedPhero = new Phero(AntubisAgentType.PHERO, Phero.BASE_LIFETIME * lastSeenResourceLife));
+			dropedPheros.push(lastDropedPhero);
+		}
+		
 		protected function GoToPoint(_direction:Point) : void {
 			direction = _direction.subtract(targetPoint);
 			direction.normalize(1);
+		}
+		
+		protected function GoBack() : void {
+			GoToPoint(takenResourcePos);
+			takenResourcePos = null;
 		}
 		
 		protected function GoToEnemyBot() : void {
@@ -270,13 +309,10 @@
 			}
 		}
 		
-		protected function RenforcePhero() : void {
-			seenPhero.lifetime = takenResourceLife*Phero.BASE_LIFETIME;
-		}
-		
 		public override function TakeResource() : void {
 			super.TakeResource();
 			takenResourceLife = takenResource.GetLife();
+			takenResourcePos = takenResource.GetCurrentPoint();
 		}
 		
 		protected function IsAtHome() : Boolean {
